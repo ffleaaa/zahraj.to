@@ -75,15 +75,15 @@
 
   <!-- Záložky -->
   <div class="nav-tabs">
-    <button class="tab-btn active" onclick="switchTab('exercise')">Cvičenie</button>
-    <button class="tab-btn" onclick="switchTab('legend')">Vysvetlivky (Legenda)</button>
+    <button class="tab-btn active" onclick="switchTab('exercise', event)">Cvičenie</button>
+    <button class="tab-btn" onclick="switchTab('legend', event)">Vysvetlivky (Legenda)</button>
   </div>
 
   <!-- Obsah: Cvičenie -->
   <div id="exercise" class="tab-content active">
     <div class="rhythm-box">
       <div id="tsDisplay" style="font-weight: 600; color: var(--primary);">Takt: 4/4</div>
-      <div class="measure-display" id="rhythmPattern">𝄢  𝄢  𝄢  𝄢</div>
+      <div class="measure-display" id="rhythmPattern">♩  ♩  ♩  ♩</div>
       <p id="beatsCount" style="margin-top: 8px; font-size: 0.85rem; color: var(--text-muted);">Kapacita taktu: 4 doby</p>
     </div>
     <button class="btn" onclick="generateRandomPattern()">Vygenerovať nový rytmus</button>
@@ -101,11 +101,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr><td class="symbol">𝅗𝅥 / 𝄻</td><td>Celá nota / pomlčka</td><td>4 doby</td><td>Trvá celé 4 doby v 4/4 takte.</td></tr>
-        <tr><td class="symbol">𝅘𝅥 / 𝄼</td><td>Polová nota / pomlčka</td><td>2 doby</td><td>Polovica celej noty.</td></tr>
+        <tr><td class="symbol">𝅗𝅥 / 𝄻</td><td>Celá nota / pomlčka</td><td>4 doby</td><td>Trvá celé 4 doby v 4/4 takte.</td></tr>
+        <tr><td class="symbol">𝅘𝅥 / 𝄼</td><td>Polová nota / pomlčka</td><td>2 doby</td><td>Polovica celej noty.</td></tr>
         <tr><td class="symbol">♩ / 𝄽</td><td>Štvrťová nota / pomlčka</td><td>1 doba</td><td>Základná jednotka väčšiny taktov.</td></tr>
         <tr><td class="symbol">♪ / 𝄾</td><td>Ôsminová nota / pomlčka</td><td>1/2 doby</td><td>Dve ôsminové noty tvoria 1 dobu.</td></tr>
-        <tr><td class="symbol">𝅘𝅥𝅮 / 𝄿</td><td>Šesťnástinová nota / pomlčka</td><td>1/4 doby</td><td>Štyri šesťnástinové noty tvoria 1 dobu.</td></tr>
+        <tr><td class="symbol">𝅘𝅥𝅮 / 𝄿</td><td>Šesťnástinová nota / pomlčka</td><td>1/4 doby</td><td>Štyri šesťnástinové noty tvoria 1 dobu.</td></tr>
         <tr><td class="symbol">3️⃣</td><td>Triola</td><td>3 noty v cene 2</td><td>Rytmická skupina 3 nôt na ploche 2 rovnako dlhých nôt.</td></tr>
         <tr><td class="symbol">6️⃣</td><td>Sextola</td><td>6 nôt v cene 4</td><td>Rytmická skupina 6 nôt rozdelená do jednej doby/taktu.</td></tr>
         <tr><td class="symbol">♩.</td><td>Nota s bodkou</td><td>+50% dĺžky</td><td>Bodka predlžuje trvanie noty o polovicu jej hodnoty (napr. štvrťová s bodkou = 1.5 doby).</td></tr>
@@ -116,12 +116,14 @@
 </div>
 
 <script>
-  function switchTab(tabId) {
+  function switchTab(tabId, evt) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
     
     document.getElementById(tabId).classList.add('active');
-    event.target.classList.add('active');
+    if (evt && evt.target) {
+      evt.target.classList.add('active');
+    }
   }
 
   function changeTimeSignature() {
@@ -133,7 +135,7 @@
     else if (ts === '3/4') beats = 3;
     else if (ts === '4/4') beats = 4;
     else if (ts === '5/4') beats = 5;
-    else if (ts === '6/8') beats = 3; // 6 ôsminiek = 3 štvrťové doby
+    else if (ts === '6/8') beats = 3;
     else if (ts === '7/8') beats = 3.5;
     else if (ts === '12/8') beats = 6;
 
@@ -142,7 +144,7 @@
   }
 
   function generateRandomPattern() {
-    const notes = ['♩', '♪♪', '𝅘𝅥𝅮𝅘𝅥𝅮𝅘𝅥𝅮𝅘𝅥𝅮', '𝄽', '♩. ♪'];
+    const notes = ['♩', '♪♪', '𝅘𝅥𝅮𝅘𝅥𝅮𝅘𝅥𝅮𝅘𝅥𝅮', '𝄽', '♩. ♪'];
     const selected = notes[Math.floor(Math.random() * notes.length)];
     document.getElementById('rhythmPattern').innerText = selected + " | " + selected;
   }
