@@ -31,7 +31,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Hravé pozadie s hudobnými motívmi */
 body::before {
   content: "🎵 🎶 🎸 🎼 ♫ ♬ 🎈 ⭐ 🥁 🎺 🎻 🎷 🎵 🎶 🎸";
   position: fixed;
@@ -55,7 +54,6 @@ main {
   z-index: 1;
 }
 
-/* NAVIGÁCIA A TOP BAR */
 .top-nav {
   display: flex;
   justify-content: space-between;
@@ -97,7 +95,6 @@ main {
   background: #ff6b81;
 }
 
-/* DOMOVSKÁ OBRAZOVKA (MENU) */
 #home-view {
   animation: fadeIn 0.4s ease;
 }
@@ -187,7 +184,6 @@ main {
   transform: rotate(45deg);
 }
 
-/* RYTMICKÁ ČASŤ (CVIČENIE) */
 #rhythm-view {
   display: none;
   animation: fadeIn 0.4s ease;
@@ -200,6 +196,38 @@ main {
   padding: 24px;
   box-shadow: 0 15px 35px rgba(0,0,0,0.08);
   backdrop-filter: blur(5px);
+}
+
+.rhythm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.rhythm-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-info {
+  background: #70a1ff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 18px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(112, 161, 255, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-info:hover {
+  background: #1e90ff;
+  transform: translateY(-2px);
 }
 
 .controls {
@@ -370,6 +398,88 @@ button:disabled {
   font-size: 15px;
 }
 
+/* Modal pre vysvetlivky */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 24px;
+  max-width: 650px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 24px;
+  color: #ff4757;
+}
+
+.close-modal {
+  background: #f1f2f6;
+  border: none;
+  font-size: 20px;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+}
+
+.guide-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+
+.guide-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: #f8f9fa;
+  padding: 12px 18px;
+  border-radius: 16px;
+  border: 2px solid #edf2f7;
+}
+
+.guide-item svg {
+  width: 45px;
+  height: 50px;
+  flex-shrink: 0;
+}
+
+.guide-item-info h4 {
+  margin: 0 0 4px;
+  font-size: 17px;
+  color: #2f3542;
+}
+
+.guide-item-info p {
+  margin: 0;
+  font-size: 14px;
+  color: #747d8c;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -379,20 +489,19 @@ button:disabled {
   .stats { grid-template-columns: 1fr 1fr; }
   .score { padding: 5px 0; }
   .top-nav { flex-direction: column; gap: 10px; text-align: center; }
+  .rhythm-header { flex-direction: column; align-items: flex-start; }
 }
 </style>
 </head>
 <body>
 <main>
-  <!-- HORNÁ LIŠTA (SPOLOČNÁ) -->
   <div class="top-nav">
     <div class="brand-main" onclick="showHome()">
       <span>ZAHRAJ TO</span> 🎵
     </div>
-    <button class="btn-back" id="backBtn" onclick="showHome()">⬅ Zpät do menu</button>
+    <button class="btn-back" id="backBtn" onclick="showHome()">⬅ Späť do menu</button>
   </div>
 
-  <!-- ÚVODNÁ STRÁNKA (DOMOV / MENU) -->
   <div id="home-view">
     <div class="hero-title">
       <h1>Ahoj hudobník! 👋</h1>
@@ -400,14 +509,12 @@ button:disabled {
     </div>
 
     <div class="games-grid">
-      <!-- DLAŽDICA RYTMIKA -->
       <div class="game-card" onclick="openRhythmGame()">
         <span class="emoji-icon">🥁</span>
         <h2>RYTMIKA</h2>
         <p>Precvič si rytmus, tlieskaj alebo brnkaj na gitare podľa nôt.</p>
       </div>
 
-      <!-- PRIPRAVOVANÉ ĎALŠIE CVIČENIA (PRE ZUŠ) -->
       <div class="game-card disabled">
         <div class="tag-coming">Uskoro</div>
         <span class="emoji-icon">🎼</span>
@@ -424,10 +531,12 @@ button:disabled {
     </div>
   </div>
 
-  <!-- CVIČENIE RYTMIKA -->
   <div id="rhythm-view">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
-      <h2 style="margin:0; font-size: 28px;">Rytmický trenažér 🎸</h2>
+    <div class="rhythm-header">
+      <div class="rhythm-header-left">
+        <button class="btn-info" onclick="toggleModal(true)">📖 VYSVETLIVKY</button>
+        <h2 style="margin:0; font-size: 26px;">Rytmický trenažér 🎸</h2>
+      </div>
       <div id="level-badge">Ľahká úroveň</div>
     </div>
 
@@ -444,9 +553,9 @@ button:disabled {
         
         <label>Náročnosť: 
           <select id="difficulty">
-            <option value="easy">Ľahká (Celé, polové, štvrtky)</option>
-            <option value="normal">Stredná (Osminy, trioly, 16stiny)</option>
-            <option value="hard">Ťažká ZUŠ (Bodky, stopky, sextoly)</option>
+            <option value="easy">Ľahká</option>
+            <option value="normal">Mierna</option>
+            <option value="hard">Ťažká (ZUŠ)</option>
           </select>
         </label>
         
@@ -476,8 +585,58 @@ button:disabled {
   </div>
 </main>
 
+<!-- Modal Vysvetlivky -->
+<div class="modal-overlay" id="guideModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>📖 Ako čítať noty a stopky?</h3>
+      <button class="close-modal" onclick="toggleModal(false)">✕</button>
+    </div>
+    <div class="guide-grid">
+      <div class="guide-item">
+        <svg viewBox="0 0 50 50"><ellipse cx="25" cy="25" rx="10" ry="7" fill="none" stroke="#2f3542" stroke-width="3" transform="rotate(-20 25 25)"/></svg>
+        <div class="guide-item-info">
+          <h4>Celá nota</h4>
+          <p>Trvá <b>4 doby</b> (1 - 2 - 3 - 4). Prázdne bruško bez paličky.</p>
+        </div>
+      </div>
+
+      <div class="guide-item">
+        <svg viewBox="0 0 50 50"><ellipse cx="20" cy="30" rx="8" ry="5" fill="none" stroke="#2f3542" stroke-width="3" transform="rotate(-20 20 30)"/><line x1="27" y1="28" x2="27" y2="8" stroke="#2f3542" stroke-width="3"/></svg>
+        <div class="guide-item-info">
+          <h4>Polová nota</h4>
+          <p>Trvá <b>2 doby</b> (1 - 2). Prázdne bruško s paličkou.</p>
+        </div>
+      </div>
+
+      <div class="guide-item">
+        <svg viewBox="0 0 50 50"><ellipse cx="20" cy="30" rx="8" ry="5" fill="#2f3542" transform="rotate(-20 20 30)"/><line x1="27" y1="28" x2="27" y2="8" stroke="#2f3542" stroke-width="3"/></svg>
+        <div class="guide-item-info">
+          <h4>Štvrťová nota</h4>
+          <p>Trvá <b>1 dobu</b> (1). Plné bruško s paličkou.</p>
+        </div>
+      </div>
+
+      <div class="guide-item">
+        <svg viewBox="0 0 50 50"><ellipse cx="18" cy="32" rx="7" ry="5" fill="#2f3542" transform="rotate(-20 18 32)"/><line x1="24" y1="30" x2="24" y2="10" stroke="#2f3542" stroke-width="3"/><path d="M 24 10 Q 34 18 30 26" stroke="#2f3542" stroke-width="3" fill="none"/></svg>
+        <div class="guide-item-info">
+          <h4>Osminová nota</h4>
+          <p>Trvá <b>1/2 doby</b> (Rýchlejšia, dve tvoria jednu dobu: "Prvá-dru-há").</p>
+        </div>
+      </div>
+
+      <div class="guide-item">
+        <svg viewBox="0 0 50 50"><path d="M 21 10 L 29 20 L 23 27 Q 31 30 27 37" stroke="#ff4757" stroke-width="3.5" fill="none"/></svg>
+        <div class="guide-item-info">
+          <h4>Štvrťová pomlčka (Stopka)</h4>
+          <p>Ticho na <b>1 dobu</b>. Vtedy nehraj a čakaj!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-// --- NAVIGÁCIA MEDZI STRÁNKAMI ---
 const homeView = document.getElementById('home-view');
 const rhythmView = document.getElementById('rhythm-view');
 const backBtn = document.getElementById('backBtn');
@@ -496,7 +655,10 @@ function openRhythmGame() {
   newPattern();
 }
 
-// --- LOGIKA RYTMIKY ---
+function toggleModal(show) {
+  document.getElementById('guideModal').style.display = show ? 'flex' : 'none';
+}
+
 const notation = document.getElementById('notation');
 const statusEl = document.getElementById('status');
 const tap = document.getElementById('tap');
@@ -557,7 +719,7 @@ function newPattern() {
   statusEl.className = 'status';
   fill.style.width = '0%';
   
-  const labels = { easy: 'Ľahká úroveň', normal: 'Stredná úroveň', hard: 'Ťažká úroveň (ZUŠ)' };
+  const labels = { easy: 'Ľahká úroveň', normal: 'Mierna úroveň', hard: 'Ťažká úroveň' };
   levelBadge.textContent = labels[diffSel.value];
 }
 
