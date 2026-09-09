@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rytmický trenažér</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 20px; display: flex; justify-content: center; }
+    .container { max-width: 900px; width: 100%; background: var(--card-bg); border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    
+    header { margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+    h1 { font-size: 1.5rem; color: var(--primary); margin-bottom: 8px; }
+    
+    .controls { display: flex; gap: 16px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; background: #f1f5f9; padding: 12px; border-radius: 8px; }
+    label { font-weight: 600; font-size: 0.9rem; }
+    select { padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); font-size: 1rem; background: white; cursor: pointer; }
+    
+    .score-badge { margin-left: auto; font-size: 0.85rem; background: #e0e7ff; color: #3730a3; padding: 6px 12px; border-radius: 20px; font-weight: 600; }
+
+    .rhythm-box { background: #fafafa; border: 2px dashed var(--border); border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 24px; min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    .measure-display { font-size: 1.25rem; font-weight: bold; margin-top: 10px; letter-spacing: 2px; }
+
+    .nav-tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+    .tab-btn { padding: 8px 16px; border: none; background: none; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Tabuľka vysvetliviek */
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    th { background: #f8fafc; color: var(--text-muted); }
+    .symbol { font-weight: bold; font-size: 1.1rem; }
+
+    .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: var(--primary-hover); }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Rytmický trenažér</h1>
+    <p style="color: var(--text-muted); font-size: 0.9rem;">Procvičovanie rytmu a taktov</p>
+  </header>
+
+  <!-- Ovládací panel -->
+  <div class="controls">
+    <div>
+      <label for="timeSignature">Taktové označenie (Time Signature): </label>
+      <select id="timeSignature" onchange="changeTimeSignature()">
+        <option value="2/4">2/4</option>
+        <option value="3/4">3/4</option>
+        <option value="4/4" selected>4/4</option>
+        <option value="5/4">5/4</option>
+        <option value="6/8">6/8</option>
+        <option value="7/8">7/8</option>
+        <option value="12/8">12/8</option>
+      </select>
+    </div>
+    <div class="score-badge">Hranica úspešnosti: 60 %</div>
+  </div>
+
+  <!-- Záložky -->
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('exercise')">Cvičenie</button>
+    <button class="tab-btn" onclick="switchTab('legend')">Vysvetlivky (Legenda)</button>
+  </div>
+
+  <!-- Obsah: Cvičenie -->
+  <div id="exercise" class="tab-content active">
+    <div class="rhythm-box">
+      <div id="tsDisplay" style="font-weight: 600; color: var(--primary);">Takt: 4/4</div>
+      <div class="measure-display" id="rhythmPattern">𝄢  𝄢  𝄢  𝄢</div>
+      <p id="beatsCount" style="margin-top: 8px; font-size: 0.85rem; color: var(--text-muted);">Kapacita taktu: 4 doby</p>
+    </div>
+    <button class="btn" onclick="generateRandomPattern()">Vygenerovať nový rytmus</button>
+  </div>
+
+  <!-- Obsah: Vysvetlivky -->
+  <div id="legend" class="tab-content">
+    <table>
+      <thead>
+        <tr>
+          <th>Typ</th>
+          <th>Názov</th>
+          <th>Dĺžka / Trvanie</th>
+          <th>Popis</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="symbol">𝅗𝅥 / 𝄻</td><td>Celá nota / pomlčka</td><td>4 doby</td><td>Trvá celé 4 doby v 4/4 takte.</td></tr>
+        <tr><td class="symbol">𝅘𝅥 / 𝄼</td><td>Polová nota / pomlčka</td><td>2 doby</td><td>Polovica celej noty.</td></tr>
+        <tr><td class="symbol">♩ / 𝄽</td><td>Štvrťová nota / pomlčka</td><td>1 doba</td><td>Základná jednotka väčšiny taktov.</td></tr>
+        <tr><td class="symbol">♪ / 𝄾</td><td>Ôsminová nota / pomlčka</td><td>1/2 doby</td><td>Dve ôsminové noty tvoria 1 dobu.</td></tr>
+        <tr><td class="symbol">𝅘𝅥𝅮 / 𝄿</td><td>Šesťnástinová nota / pomlčka</td><td>1/4 doby</td><td>Štyri šesťnástinové noty tvoria 1 dobu.</td></tr>
+        <tr><td class="symbol">3️⃣</td><td>Triola</td><td>3 noty v cene 2</td><td>Rytmická skupina 3 nôt na ploche 2 rovnako dlhých nôt.</td></tr>
+        <tr><td class="symbol">6️⃣</td><td>Sextola</td><td>6 nôt v cene 4</td><td>Rytmická skupina 6 nôt rozdelená do jednej doby/taktu.</td></tr>
+        <tr><td class="symbol">♩.</td><td>Nota s bodkou</td><td>+50% dĺžky</td><td>Bodka predlžuje trvanie noty o polovicu jej hodnoty (napr. štvrťová s bodkou = 1.5 doby).</td></tr>
+        <tr><td class="symbol">𝄼 - 𝄿</td><td>Stopky / Pomlčky</td><td>Rôzne</td><td>Pauza/ticho v príslušnej dĺžke danej noty.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    
+    document.getElementById(tabId).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  function changeTimeSignature() {
+    const ts = document.getElementById('timeSignature').value;
+    document.getElementById('tsDisplay').innerText = `Takt: ${ts}`;
+    
+    let beats = 4;
+    if (ts === '2/4') beats = 2;
+    else if (ts === '3/4') beats = 3;
+    else if (ts === '4/4') beats = 4;
+    else if (ts === '5/4') beats = 5;
+    else if (ts === '6/8') beats = 3; // 6 ôsminiek = 3 štvrťové doby
+    else if (ts === '7/8') beats = 3.5;
+    else if (ts === '12/8') beats = 6;
+
+    document.getElementById('beatsCount').innerText = `Kapacita taktu: ${beats} dôb`;
+    generateRandomPattern();
+  }
+
+  function generateRandomPattern() {
+    const notes = ['♩', '♪♪', '𝅘𝅥𝅮𝅘𝅥𝅮𝅘𝅥𝅮𝅘𝅥𝅮', '𝄽', '♩. ♪'];
+    const selected = notes[Math.floor(Math.random() * notes.length)];
+    document.getElementById('rhythmPattern').innerText = selected + " | " + selected;
+  }
+</script>
+
+</body>
+</html>
