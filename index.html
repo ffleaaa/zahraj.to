@@ -3,70 +3,1931 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎵 ZAHRAJ TO</title>
 
-<title>ZAHRAJ TO 🎵</title>
+<style>
+* {
+    box-sizing: border-box;
+}
 
-css/style.css
+body {
+    margin: 0;
+    font-family: "Trebuchet MS", Arial, sans-serif;
+    background: linear-gradient(135deg, #ffe4f1, #dff3ff, #fff6bd, #e5ffd9);
+    min-height: 100vh;
+    color: #443b55;
+    overflow-x: hidden;
+}
 
+body::before {
+    content: "🎵  🎶  🎼  ♬  🥁  🎹  🎻  ⭐  🌈  🎵  ♫";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    font-size: 45px;
+    line-height: 150px;
+    letter-spacing: 35px;
+    opacity: .08;
+    animation: backgroundMove 20s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes backgroundMove {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-80px); }
+    100% { transform: translateY(0); }
+}
+
+header {
+    background: rgba(255,255,255,.85);
+    backdrop-filter: blur(10px);
+    padding: 18px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 5px 20px rgba(80,60,100,.12);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.logo {
+    font-size: 30px;
+    font-weight: 900;
+    color: #8e62d9;
+}
+
+.logo span {
+    color: #ff6fae;
+}
+
+.back {
+    border: none;
+    background: #e9ddff;
+    color: #704db0;
+    padding: 10px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    display: none;
+}
+
+main {
+    max-width: 1200px;
+    margin: auto;
+    padding: 35px 20px;
+}
+
+.hero {
+    text-align: center;
+    padding: 25px 10px 35px;
+}
+
+.hero h1 {
+    font-size: clamp(45px, 8vw, 80px);
+    margin: 0;
+    color: #7957c9;
+    text-shadow: 4px 4px white;
+}
+
+.hero p {
+    font-size: 20px;
+}
+
+.menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 22px;
+}
+
+.card {
+    background: rgba(255,255,255,.92);
+    border-radius: 30px;
+    padding: 30px 22px;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(80,60,100,.12);
+    cursor: pointer;
+    transition: .25s;
+    border: 3px solid transparent;
+}
+
+.card:hover {
+    transform: scale(1.05) rotate(-1deg);
+    box-shadow: 0 18px 40px rgba(80,60,100,.2);
+}
+
+.card:nth-child(1) { border-color: #ffb6d5; }
+.card:nth-child(2) { border-color: #a9dfff; }
+.card:nth-child(3) { border-color: #d0b5ff; }
+.card:nth-child(4) { border-color: #ffe28a; }
+.card:nth-child(5) { border-color: #aee8b1; }
+.card:nth-child(6) { border-color: #ffc7a8; }
+
+.card .icon {
+    font-size: 60px;
+}
+
+.card h2 {
+    margin: 12px 0 8px;
+}
+
+.card p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+    animation: appear .35s ease;
+}
+
+@keyframes appear {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.panel {
+    background: rgba(255,255,255,.94);
+    border-radius: 30px;
+    padding: 28px;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 30px rgba(80,60,100,.12);
+}
+
+.panel h2 {
+    color: #7654c4;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+button, select {
+    border: none;
+    border-radius: 18px;
+    padding: 13px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    background: #e8ddff;
+    color: #553c86;
+    transition: .2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    filter: brightness(.97);
+}
+
+button.primary {
+    background: #ff91bd;
+    color: white;
+}
+
+button.blue {
+    background: #9ddcff;
+    color: #225a7a;
+}
+
+button.yellow {
+    background: #ffe18a;
+    color: #775b00;
+}
+
+button.green {
+    background: #aee8b1;
+    color: #27622c;
+}
+
+button.purple {
+    background: #c9adff;
+    color: #53308d;
+}
+
+button.red {
+    background: #ff9c9c;
+    color: #762929;
+}
+
+.rhythm {
+    background: white;
+    border-radius: 25px;
+    padding: 25px;
+    font-size: 48px;
+    text-align: center;
+    letter-spacing: 8px;
+    margin: 20px 0;
+    border: 4px dashed #d4b9ff;
+}
+
+.beat {
+    display: inline-block;
+    padding: 5px;
+    transition: .2s;
+}
+
+.beat.active {
+    color: #ff5da2;
+    transform: scale(1.35);
+    text-shadow: 0 0 15px #ffb1d0;
+}
+
+.tap-button {
+    width: 190px;
+    height: 190px;
+    border-radius: 50%;
+    border: 10px solid #ffb6d5;
+    background: #ff78b1;
+    color: white;
+    font-size: 28px;
+    box-shadow: 0 10px 0 #d6538d;
+    margin: 10px;
+}
+
+.tap-button:active {
+    transform: translateY(8px);
+    box-shadow: 0 2px 0 #d6538d;
+}
+
+.status {
+    padding: 15px;
+    border-radius: 18px;
+    background: #f4edff;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.progress {
+    height: 20px;
+    background: #eee;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 15px 0;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #ff9fc6, #a9dfff, #bca0ff);
+    width: 0%;
+    transition: .5s;
+}
+
+.note {
+    font-size: 100px;
+    text-align: center;
+    background: #f7f0ff;
+    border-radius: 25px;
+    margin: 20px 0;
+    padding: 20px;
+}
+
+.answers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.answers button {
+    min-height: 65px;
+    background: #dff3ff;
+}
+
+.explanation {
+    background: #fff8ce;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.stave {
+    position: relative;
+    height: 170px;
+    margin: 25px 0;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.line {
+    position: absolute;
+    left: 5%;
+    right: 5%;
+    height: 3px;
+    background: #555;
+}
+
+.line1 { top: 45px; }
+.line2 { top: 65px; }
+.line3 { top: 85px; }
+.line4 { top: 105px; }
+.line5 { top: 125px; }
+
+.stave-note {
+    position: absolute;
+    font-size: 45px;
+    transform: translate(-50%, -50%);
+}
+
+.interval-display {
+    display: flex;
+    justify-content: center;
+    gap: 45px;
+    align-items: center;
+    font-size: 70px;
+    padding: 30px;
+    background: #eef8ff;
+    border-radius: 25px;
+}
+
+.chord-pieces {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin: 25px 0;
+}
+
+.piece {
+    width: 90px;
+    height: 90px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    font-weight: bold;
+    background: #ffd77e;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.piece:hover {
+    transform: scale(1.08) rotate(3deg);
+}
+
+.badges {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.badge {
+    padding: 25px;
+    border-radius: 25px;
+    background: #f5efff;
+    text-align: center;
+    transition: .3s;
+    opacity: .45;
+}
+
+.badge.unlocked {
+    opacity: 1;
+    animation: badgePop .7s ease;
+    background: #fff4bd;
+}
+
+@keyframes badgePop {
+    0% { transform: scale(.5) rotate(-10deg); }
+    60% { transform: scale(1.15) rotate(5deg); }
+    100% { transform: scale(1); }
+}
+
+.badge-icon {
+    font-size: 60px;
+}
+
+.quiz-score {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+footer {
+    text-align: center;
+    padding: 30px;
+    opacity: .7;
+}
+
+#confetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.confetti-piece {
+    position: absolute;
+    width: 12px;
+    height: 18px;
+    animation: fall 2.5s linear forwards;
+}
+
+@keyframes fall {
+    0% {
+        transform: translateY(-20px) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(110vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+@media(max-width:600px) {
+    .answers {
+        grid-template-columns: 1fr;
+    }
+
+    .rhythm {
+        font-size: 32px;
+        letter-spacing: 2px;
+    }
+
+    .interval-display {
+        font-size: 50px;
+        gap: 20px;
+    }
+
+    header {
+        padding: 15px;
+    }
+}
+</style>
 </head>
+
 <body>
 
-<div class="floating-bg">
+<header>
+    <div class="logo">🎵 ZAHRAJ <span>TO</span></div>
+    <button class="back" id="backBtn" onclick="showHome()">← MENU</button>
+</header>
 
-<div class="music">🎵</div>
-<div class="music">🎶</div>
-<div class="music">🎼</div>
-<div class="music">🥁</div>
-<div class="music">🎹</div>
-<div class="music">👂</div>
+<main>
 
-</div>
+<!-- DOMOV -->
+<section id="home" class="section active">
 
-<div class="container">
+    <div class="hero">
+        <h1>🎵 ZAHRAJ TO</h1>
+        <p>Hravá hudobná teória pre malých hudobníkov ZUŠ ⭐</p>
+    </div>
 
-<h1>🎵 ZAHRAJ TO 🎵</h1>
+    <div class="menu">
 
-<p class="subtitle">
-Interaktívny svet hudobnej teórie pre deti ZUŠ
-</p>
+        <div class="card" onclick="showSection('rhythm')">
+            <div class="icon">🥁</div>
+            <h2>RYTMIKA</h2>
+            <p>Precvičuj rytmy, takty, dĺžky nôt a pomlčky.</p>
+        </div>
 
-<div class="menu">
+        <div class="card" onclick="showSection('notes')">
+            <div class="icon">🎼</div>
+            <h2>NOTY</h2>
+            <p>Spoznávaj noty v husľovom a basovom kľúči.</p>
+        </div>
 
-<div class="card">
-<span>🥁</span>
-<h2>RYTMIKA</h2>
-</div>
+        <div class="card" onclick="showSection('intervals')">
+            <div class="icon">↕️</div>
+            <h2>INTERVALY</h2>
+            <p>Uč sa intervaly podľa obrázka aj podľa sluchu.</p>
+        </div>
 
-<div class="card">
-<span>🎼</span>
-<h2>NOTY</h2>
-</div>
+        <div class="card" onclick="showSection('chords')">
+            <div class="icon">🎹</div>
+            <h2>AKORDY</h2>
+            <p>Skladaj akordy a rozlišuj dur a mol.</p>
+        </div>
 
-<div class="card">
-<span>↕️</span>
-<h2>INTERVALY</h2>
-</div>
+        <div class="card" onclick="showSection('ear')">
+            <div class="icon">👂</div>
+            <h2>SLUCHOVÝ TRÉNING</h2>
+            <p>Rozvíjaj hudobný sluch pomocou hier.</p>
+        </div>
 
-<div class="card">
-<span>🎹</span>
-<h2>AKORDY</h2>
-</div>
+        <div class="card" onclick="showSection('badges')">
+            <div class="icon">🏅</div>
+            <h2>MOJE ODZNAKY</h2>
+            <p>Prehľad tvojich hudobných úspechov.</p>
+        </div>
 
-<div class="card">
-<span>👂</span>
-<h2>SLUCHOVÝ TRÉNING</h2>
-</div>
+    </div>
+</section>
 
-<div class="card">
-<span>🏅</span>
-<h2>MOJE ODZNAKY</h2>
-</div>
 
-</div>
+<!-- RYTMIKA -->
+<section id="rhythm" class="section">
 
-</div>
+    <div class="panel">
+        <h1>🥁 Rytmika</h1>
 
-js/app.jsscript>
+        <h2>Tempo</h2>
+
+        <div class="controls">
+            <button onclick="setBPM(60)">60 BPM</button>
+            <button onclick="setBPM(80)">80 BPM</button>
+            <button onclick="setBPM(100)">100 BPM</button>
+            <button onclick="setBPM(120)">120 BPM</button>
+        </div>
+
+        <p>Aktuálne tempo: <strong id="bpmValue">80 BPM</strong></p>
+
+        <h2>Takt</h2>
+
+        <div class="controls">
+            <button onclick="setMeter('2/4')">2/4</button>
+            <button onclick="setMeter('3/4')">3/4</button>
+            <button class="primary" onclick="setMeter('4/4')">4/4</button>
+            <button onclick="setMeter('5/4')">5/4</button>
+            <button onclick="setMeter('6/8')">6/8</button>
+            <button onclick="setMeter('7/8')">7/8</button>
+        </div>
+
+        <p>Aktuálny takt: <strong id="meterValue">4/4</strong></p>
+
+        <h2>Úroveň</h2>
+
+        <div class="controls">
+            <button class="green" onclick="setLevel('easy')">🟢 ĽAHKÁ</button>
+            <button class="yellow" onclick="setLevel('medium')">🟡 STREDNÁ</button>
+            <button class="red" onclick="setLevel('hard')">🔴 ŤAŽKÁ</button>
+        </div>
+
+        <div class="rhythm" id="rhythmDisplay">
+            <span class="beat">♩</span>
+            <span class="beat">♩</span>
+            <span class="beat">♩</span>
+            <span class="beat">♩</span>
+            |
+            <span class="beat">♩</span>
+            <span class="beat">♩</span>
+            <span class="beat">♩</span>
+            <span class="beat">♩</span>
+        </div>
+
+        <div class="controls">
+            <button class="primary" onclick="playRhythm()">▶ PREHRAŤ VZOR</button>
+            <button class="blue" onclick="newRhythm()">🔄 NOVÝ RYTMUS</button>
+        </div>
+
+        <h2>🎯 Zopakuj rytmus</h2>
+
+        <p>Môžeš klikať, používať medzerník alebo mikrofón.</p>
+
+        <button class="tap-button" id="tapButton" onclick="tapRhythm()">
+            👆<br>ŤUKAJ
+        </button>
+
+        <div class="controls">
+            <button class="purple" onclick="startMic()">🎤 ZAPNÚŤ MIKROFÓN</button>
+            <button onclick="stopMic()">⏹ VYPNÚŤ MIKROFÓN</button>
+        </div>
+
+        <div class="status" id="rhythmStatus">
+            Pripravený! Zopakuj rytmus.
+        </div>
+
+        <div class="progress">
+            <div class="progress-bar" id="rhythmProgress"></div>
+        </div>
+
+    </div>
+
+    <div class="panel">
+        <h2>📖 Vysvetlivky</h2>
+
+        <div class="explanation">
+            <h3>♩ Štvrťová nota</h3>
+            <p>Trvá <strong>1 dobu</strong>.</p>
+        </div>
+
+        <div class="explanation">
+            <h3>𝅗𝅥 Polová nota</h3>
+            <p>Trvá <strong>2 doby</strong>.</p>
+        </div>
+
+        <div class="explanation">
+            <h3>𝅝 Celá nota</h3>
+            <p>Trvá <strong>4 doby</strong>.</p>
+        </div>
+
+        <div class="explanation">
+            <h3>♪ Osminová nota</h3>
+            <p>Trvá <strong>polovicu doby</strong>.</p>
+        </div>
+
+        <div class="explanation">
+            <h3>𝄽 Pomlčka</h3>
+            <p>Pomlčka znamená, že počas určitého času nehráme.</p>
+        </div>
+    </div>
+
+</section>
+
+
+<!-- NOTY -->
+<section id="notes" class="section">
+
+    <div class="panel">
+        <h1>🎼 Noty</h1>
+
+        <div class="controls">
+            <button class="primary" onclick="noteMode='treble';newNoteQuestion()">🎻 Husľový kľúč</button>
+            <button class="blue" onclick="noteMode='bass';newNoteQuestion()">🎸 Basový kľúč</button>
+            <button class="purple" onclick="noteMode='accidentals';newNoteQuestion()">♯ / ♭ Posuvky</button>
+        </div>
+
+        <h2 id="noteModeTitle">🎻 Husľový kľúč</h2>
+
+        <div class="stave">
+            <div class="line line1"></div>
+            <div class="line line2"></div>
+            <div class="line line3"></div>
+            <div class="line line4"></div>
+            <div class="line line5"></div>
+
+            <div class="stave-note" id="staveNote" style="left:50%;top:85px;">●</div>
+        </div>
+
+        <h2>Aká je to nota?</h2>
+
+        <div class="answers" id="noteAnswers"></div>
+
+        <div class="status" id="noteStatus">
+            Vyber správnu odpoveď.
+        </div>
+
+        <p class="quiz-score">Správne: <span id="noteScore">0</span>/10</p>
+
+    </div>
+
+    <div class="panel">
+        <h2>📖 Vysvetlivky</h2>
+
+        <div class="explanation">
+            <h3>🎻 Husľový kľúč</h3>
+            <p>Husľový kľúč určuje výšku tónov na notovej osnove.</p>
+            <p><strong>Linky:</strong> E – G – H – D – F</p>
+            <p><strong>Medzery:</strong> F – A – C – E</p>
+        </div>
+
+        <div class="explanation">
+            <h3>🎸 Basový kľúč</h3>
+            <p>Basový kľúč používame najmä pre nižšie tóny.</p>
+            <p><strong>Linky:</strong> G – H – D – F – A</p>
+            <p><strong>Medzery:</strong> A – C – E – G</p>
+        </div>
+
+        <div class="explanation">
+            <h3>♯ Krížik</h3>
+            <p>Zvyšuje tón o pol tónu.</p>
+        </div>
+
+        <div class="explanation">
+            <h3>♭ Béčko</h3>
+            <p>Znižuje tón o pol tónu.</p>
+        </div>
+
+        <div class="explanation">
+            <h3>🎓 Nauč sa noty</h3>
+            <p>Klikaj na odpovede a postupne sa nauč všetky noty.</p>
+        </div>
+    </div>
+
+</section>
+
+
+<!-- INTERVALY -->
+<section id="intervals" class="section">
+
+    <div class="panel">
+
+        <h1>↕️ Intervaly</h1>
+
+        <div class="controls">
+            <button class="primary" onclick="intervalGame='picture';newInterval()">🎨 Podľa obrázka</button>
+            <button class="blue" onclick="intervalGame='ear';playInterval()">👂 Podľa sluchu</button>
+            <button class="purple" onclick="intervalGame='build';newInterval()">🎯 Postav interval</button>
+        </div>
+
+        <div class="interval-display">
+            <span id="intervalNote1">C</span>
+            <span>→</span>
+            <span id="intervalNote2">G</span>
+        </div>
+
+        <h2 id="intervalQuestion">Aký je to interval?</h2>
+
+        <div class="answers" id="intervalAnswers">
+        </div>
+
+        <div class="status" id="intervalStatus">
+            Vyber správnu odpoveď.
+        </div>
+
+        <p class="quiz-score">
+            Správne: <span id="intervalScore">0</span>/10
+        </p>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>📖 Intervaly</h2>
+
+        <div class="explanation">
+            <h3>1 – Prima</h3>
+            <p>C → C</p>
+        </div>
+
+        <div class="explanation">
+            <h3>2 – Sekunda</h3>
+            <p>C → D</p>
+        </div>
+
+        <div class="explanation">
+            <h3>3 – Tercia</h3>
+            <p>C → E</p>
+        </div>
+
+        <div class="explanation">
+            <h3>4 – Kvarta</h3>
+            <p>C → F</p>
+        </div>
+
+        <div class="explanation">
+            <h3>5 – Kvinta</h3>
+            <p>C → G</p>
+        </div>
+
+        <div class="explanation">
+            <h3>6 – Sexta</h3>
+            <p>C → A</p>
+        </div>
+
+        <div class="explanation">
+            <h3>7 – Septima</h3>
+            <p>C → H</p>
+        </div>
+
+        <div class="explanation">
+            <h3>8 – Oktáva</h3>
+            <p>C → C</p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- AKORDY -->
+<section id="chords" class="section">
+
+    <div class="panel">
+
+        <h1>🎹 Akordy</h1>
+
+        <h2>🧩 Poskladaj akord</h2>
+
+        <p id="chordQuestion">Poskladaj <strong>C dur</strong>.</p>
+
+        <div class="chord-pieces">
+            <div class="piece" onclick="selectChordNote('C')">C</div>
+            <div class="piece" onclick="selectChordNote('E')">E</div>
+            <div class="piece" onclick="selectChordNote('G')">G</div>
+            <div class="piece" onclick="selectChordNote('D')">D</div>
+            <div class="piece" onclick="selectChordNote('F')">F</div>
+            <div class="piece" onclick="selectChordNote('A')">A</div>
+        </div>
+
+        <div class="status" id="chordStatus">
+            Vyber tri tóny.
+        </div>
+
+        <button class="primary" onclick="checkChord()">✓ SKONTROLOVAŤ</button>
+
+        <hr style="margin:30px 0;border:0;border-top:2px dashed #ddd;">
+
+        <h2>😁 Dur alebo Mol?</h2>
+
+        <button class="yellow" onclick="chordTypeAnswer('dur')">
+            😁 DUR
+        </button>
+
+        <button class="blue" onclick="chordTypeAnswer('mol')">
+            😢 MOL
+        </button>
+
+        <div class="status" id="chordTypeStatus">
+            Stlač ▶ a vypočuj si akord.
+        </div>
+
+        <button class="primary" onclick="playChord()">▶ PREHRAŤ AKORD</button>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>📖 Vysvetlivky</h2>
+
+        <div class="explanation">
+            <h3>😁 Dur</h3>
+            <p>Dur akord má často veselý a jasný charakter.</p>
+        </div>
+
+        <div class="explanation">
+            <h3>😢 Mol</h3>
+            <p>Mol akord má často pokojnejší alebo smutnejší charakter.</p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- SLUCH -->
+<section id="ear" class="section">
+
+    <div class="panel">
+
+        <h1>👂 Sluchový tréning</h1>
+
+        <h2>📈 Vyšší alebo nižší?</h2>
+
+        <button class="primary" onclick="playHigherLower()">▶ PREHRAŤ DVA TÓNY</button>
+
+        <div class="controls">
+            <button class="yellow" onclick="higherLowerAnswer('higher')">⬆️ VYŠŠÍ</button>
+            <button class="blue" onclick="higherLowerAnswer('lower')">⬇️ NIŽŠÍ</button>
+        </div>
+
+        <div class="status" id="higherStatus">
+            Najprv si vypočuj tóny.
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>🎵 Zopakuj melódiu</h2>
+
+        <p>Aplikácia prehrá krátku melódiu.</p>
+
+        <button class="primary" onclick="playMelody()">▶ PREHRAŤ MELODÍU</button>
+
+        <div class="controls">
+            <button onclick="playTone(261.63)">C</button>
+            <button onclick="playTone(293.66)">D</button>
+            <button onclick="playTone(329.63)">E</button>
+            <button onclick="playTone(349.23)">F</button>
+            <button onclick="playTone(392)">G</button>
+        </div>
+
+        <div class="status" id="melodyStatus">
+            Zopakuj melódiu C – D – E.
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>🎹 Rozpoznaj tón</h2>
+
+        <button class="primary" onclick="playRecognitionTone()">
+            ▶ PREHRAŤ TÓN
+        </button>
+
+        <div class="answers">
+            <button onclick="recognitionAnswer('C')">C</button>
+            <button onclick="recognitionAnswer('D')">D</button>
+            <button onclick="recognitionAnswer('E')">E</button>
+        </div>
+
+        <div class="status" id="recognitionStatus">
+            Vypočuj si tón.
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>📖 Vysvetlivky</h2>
+
+        <div class="explanation">
+            <h3>🎵 Tón</h3>
+            <p>Tón je zvuk s určitou výškou.</p>
+        </div>
+
+        <div class="explanation">
+            <h3>🎶 Melódia</h3>
+            <p>Melódia je postupnosť tónov, ktoré vytvárajú hudobnú myšlienku.</p>
+        </div>
+
+        <div class="explanation">
+            <h3>⬆️ Vyšší tón</h3>
+            <p>Má vyššiu frekvenciu.</p>
+        </div>
+
+        <div class="explanation">
+            <h3>⬇️ Nižší tón</h3>
+            <p>Má nižšiu frekvenciu.</p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ODZNAKY -->
+<section id="badges" class="section">
+
+    <div class="panel">
+
+        <h1>🏅 Moje odznaky</h1>
+
+        <p>Získavaj body a odomykať nové odznaky.</p>
+
+        <div class="badges">
+
+            <div class="badge" id="badge-rhythm">
+                <div class="badge-icon">🥁</div>
+                <h2>Rytmický majster</h2>
+                <p>10 správnych rytmov</p>
+            </div>
+
+            <div class="badge" id="badge-notes">
+                <div class="badge-icon">🎼</div>
+                <h2>Lovec nôt</h2>
+                <p>10 správnych úloh v notách</p>
+            </div>
+
+            <div class="badge" id="badge-intervals">
+                <div class="badge-icon">↕️</div>
+                <h2>Kráľ intervalov</h2>
+                <p>10 správnych intervalov</p>
+            </div>
+
+            <div class="badge" id="badge-chords">
+                <div class="badge-icon">🎹</div>
+                <h2>Staviteľ akordov</h2>
+                <p>10 správnych akordov</p>
+            </div>
+
+            <div class="badge" id="badge-ear">
+                <div class="badge-icon">👂</div>
+                <h2>Hudobné ucho</h2>
+                <p>10 správnych sluchových úloh</p>
+            </div>
+
+            <div class="badge" id="badge-all">
+                <div class="badge-icon">🌟</div>
+                <h2>Malý hudobník ZUŠ</h2>
+                <p>Získaj všetky ostatné odznaky</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+<footer>
+    🎵 ZAHRAJ TO · Hravá hudobná teória pre ZUŠ ⭐
+</footer>
+
+<div id="confetti"></div>
+
+
+<script>
+
+/* =========================
+   ZÁKLADNÁ NAVIGÁCIA
+========================= */
+
+function showSection(id) {
+    document.querySelectorAll(".section").forEach(section => {
+        section.classList.remove("active");
+    });
+
+    document.getElementById(id).classList.add("active");
+
+    document.getElementById("backBtn").style.display = "block";
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+function showHome() {
+    document.querySelectorAll(".section").forEach(section => {
+        section.classList.remove("active");
+    });
+
+    document.getElementById("home").classList.add("active");
+    document.getElementById("backBtn").style.display = "none";
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+/* =========================
+   KONFETY
+========================= */
+
+function confetti() {
+
+    const container = document.getElementById("confetti");
+
+    for(let i = 0; i < 80; i++) {
+
+        const piece = document.createElement("div");
+
+        piece.className = "confetti-piece";
+
+        piece.style.left = Math.random() * 100 + "%";
+        piece.style.top = "-30px";
+
+        piece.style.background =
+            ["#ff8fba","#9ddcff","#ffe18a","#bca0ff","#aee8b1"]
+            [Math.floor(Math.random()*5)];
+
+        piece.style.animationDelay =
+            Math.random() * .5 + "s";
+
+        piece.style.transform =
+            "rotate(" + Math.random()*360 + "deg)";
+
+        container.appendChild(piece);
+
+        setTimeout(() => piece.remove(), 3000);
+    }
+}
+
+
+/* =========================
+   ZVUK
+========================= */
+
+let audioContext = null;
+
+function getAudio() {
+
+    if(!audioContext) {
+        audioContext =
+            new (window.AudioContext ||
+                 window.webkitAudioContext)();
+    }
+
+    if(audioContext.state === "suspended") {
+        audioContext.resume();
+    }
+
+    return audioContext;
+}
+
+function playTone(freq, duration = .4) {
+
+    const ctx = getAudio();
+
+    const oscillator = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    oscillator.frequency.value = freq;
+    oscillator.type = "sine";
+
+    gain.gain.setValueAtTime(.001, ctx.currentTime);
+
+    gain.gain.exponentialRampToValueAtTime(
+        .3,
+        ctx.currentTime + .02
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        .001,
+        ctx.currentTime + duration
+    );
+
+    oscillator.connect(gain);
+    gain.connect(ctx.destination);
+
+    oscillator.start();
+    oscillator.stop(ctx.currentTime + duration);
+}
+
+
+/* =========================
+   RYTMIKA
+========================= */
+
+let bpm = 80;
+let meter = "4/4";
+let level = "easy";
+
+let rhythmPatterns = {
+    easy: [
+        ["♩","♩","♩","♩"],
+        ["𝅗𝅥","𝅗𝅥"],
+        ["♩","𝅗𝅥","♩"]
+    ],
+    medium: [
+        ["♪","♪","♩","♪","♪"],
+        ["♩","♪","♪","♩"],
+        ["♪","♪","♪","♪","♩"]
+    ],
+    hard: [
+        ["♬","♬","♩","♪","♪"],
+        ["♩","♬","♬","♩"],
+        ["♪","♪","♬","♬"]
+    ]
+};
+
+let currentRhythm =
+    rhythmPatterns.easy[0];
+
+let tapTimes = [];
+let rhythmCorrect = 0;
+
+function setBPM(value) {
+
+    bpm = value;
+
+    document.getElementById("bpmValue")
+        .textContent = value + " BPM";
+}
+
+function setMeter(value) {
+
+    meter = value;
+
+    document.getElementById("meterValue")
+        .textContent = value;
+
+    newRhythm();
+}
+
+function setLevel(value) {
+
+    level = value;
+
+    newRhythm();
+}
+
+function displayRhythm() {
+
+    const display =
+        document.getElementById("rhythmDisplay");
+
+    display.innerHTML = "";
+
+    currentRhythm.forEach((note, index) => {
+
+        const span =
+            document.createElement("span");
+
+        span.className = "beat";
+        span.textContent = note;
+
+        span.id = "beat" + index;
+
+        display.appendChild(span);
+
+        if(index < currentRhythm.length-1) {
+            display.appendChild(
+                document.createTextNode(" ")
+            );
+        }
+    });
+}
+
+function newRhythm() {
+
+    const list =
+        rhythmPatterns[level];
+
+    currentRhythm =
+        list[Math.floor(Math.random()*list.length)];
+
+    displayRhythm();
+
+    tapTimes = [];
+
+    document.getElementById("rhythmStatus")
+        .textContent =
+        "Nový rytmus! Zopakuj ho.";
+}
+
+function playRhythm() {
+
+    const beatLength = 60000 / bpm;
+
+    currentRhythm.forEach((note,index) => {
+
+        setTimeout(() => {
+
+            document.querySelectorAll(".beat")
+                .forEach(x => x.classList.remove("active"));
+
+            const element =
+                document.getElementById("beat"+index);
+
+            if(element)
+                element.classList.add("active");
+
+            playTone(220, .18);
+
+        }, index * beatLength);
+    });
+
+    setTimeout(() => {
+
+        document.querySelectorAll(".beat")
+            .forEach(x =>
+                x.classList.remove("active")
+            );
+
+    }, currentRhythm.length * beatLength + 200);
+}
+
+function tapRhythm() {
+
+    const now = performance.now();
+
+    tapTimes.push(now);
+
+    if(tapTimes.length >= 2) {
+
+        const interval =
+            tapTimes[tapTimes.length-1] -
+            tapTimes[tapTimes.length-2];
+
+        const expected =
+            60000 / bpm;
+
+        const difference =
+            Math.abs(interval - expected);
+
+        if(difference < expected * .4) {
+
+            document.getElementById("rhythmStatus")
+                .textContent =
+                "👏 Výborne! Rytmus sedí.";
+
+            rhythmCorrect++;
+
+            updateBadgeProgress("rhythm");
+
+            confetti();
+
+        } else {
+
+            document.getElementById("rhythmStatus")
+                .textContent =
+                "🙂 Skús držať rovnomernejšie tempo.";
+        }
+    }
+}
+
+document.addEventListener("keydown", function(e) {
+
+    if(e.code === "Space") {
+
+        e.preventDefault();
+
+        const rhythmSection =
+            document.getElementById("rhythm");
+
+        if(rhythmSection.classList.contains("active")) {
+            tapRhythm();
+        }
+    }
+});
+
+
+/* =========================
+   MIKROFÓN
+========================= */
+
+let micStream = null;
+let micContext = null;
+let analyser = null;
+let micAnimation = null;
+
+async function startMic() {
+
+    try {
+
+        micStream =
+            await navigator.mediaDevices.getUserMedia({
+                audio: true
+            });
+
+        micContext =
+            new (window.AudioContext ||
+                 window.webkitAudioContext)();
+
+        const source =
+            micContext.createMediaStreamSource(
+                micStream
+            );
+
+        analyser =
+            micContext.createAnalyser();
+
+        analyser.fftSize = 512;
+
+        source.connect(analyser);
+
+        document.getElementById("rhythmStatus")
+            .textContent =
+            "🎤 Mikrofón je zapnutý. Tlieskaj, luskaj alebo hraj rytmus.";
+
+        detectMicrophoneRhythm();
+
+    } catch(error) {
+
+        document.getElementById("rhythmStatus")
+            .textContent =
+            "❌ Mikrofón sa nepodarilo zapnúť. Povoľ prístup k mikrofónu v prehliadači.";
+    }
+}
+
+function stopMic() {
+
+    if(micStream) {
+
+        micStream.getTracks().forEach(track =>
+            track.stop()
+        );
+
+        micStream = null;
+    }
+
+    if(micAnimation) {
+        cancelAnimationFrame(micAnimation);
+        micAnimation = null;
+    }
+
+    document.getElementById("rhythmStatus")
+        .textContent =
+        "🎤 Mikrofón vypnutý.";
+}
+
+let lastMicTap = 0;
+
+function detectMicrophoneRhythm() {
+
+    if(!analyser) return;
+
+    const data =
+        new Uint8Array(analyser.fftSize);
+
+    analyser.getByteTimeDomainData(data);
+
+    let sum = 0;
+
+    for(let i=0;i<data.length;i++) {
+
+        const value =
+            (data[i]-128)/128;
+
+        sum += value*value;
+    }
+
+    const volume =
+        Math.sqrt(sum/data.length);
+
+    const now =
+        performance.now();
+
+    if(volume > .12 && now-lastMicTap > 180) {
+
+        lastMicTap = now;
+
+        tapRhythm();
+    }
+
+    micAnimation =
+        requestAnimationFrame(
+            detectMicrophoneRhythm
+        );
+}
+
+
+/* =========================
+   NOTY
+========================= */
+
+let noteMode = "treble";
+let currentNote = "G";
+let noteScore = 0;
+
+const trebleNotes =
+    ["C","D","E","F","G","A","H"];
+
+const bassNotes =
+    ["C","D","E","F","G","A","H"];
+
+const accidentalNotes =
+    ["Fis","Cis","B","Es"];
+
+function newNoteQuestion() {
+
+    let list;
+
+    if(noteMode === "treble")
+        list = trebleNotes;
+
+    else if(noteMode === "bass")
+        list = bassNotes;
+
+    else
+        list = accidentalNotes;
+
+    currentNote =
+        list[Math.floor(Math.random()*list.length)];
+
+    document.getElementById("noteModeTitle")
+        .textContent =
+        noteMode === "treble"
+        ? "🎻 Husľový kľúč"
+        : noteMode === "bass"
+        ? "🎸 Basový kľúč"
+        : "♯ / ♭ Posuvky";
+
+    const note =
+        document.getElementById("staveNote");
+
+    const positions =
+        {
+            C:120,
+            D:108,
+            E:96,
+            F:84,
+            G:72,
+            A:60,
+            H:48
+        };
+
+    note.style.top =
+        (positions[currentNote] || 85) + "px";
+
+    createNoteAnswers(list);
+}
+
+function createNoteAnswers(list) {
+
+    const answers =
+        document.getElementById("noteAnswers");
+
+    answers.innerHTML = "";
+
+    let choices =
+        [currentNote];
+
+    while(choices.length < 3) {
+
+        const candidate =
+            list[Math.floor(Math.random()*list.length)];
+
+        if(!choices.includes(candidate))
+            choices.push(candidate);
+    }
+
+    choices.sort(() => Math.random()-.5);
+
+    choices.forEach(choice => {
+
+        const button =
+            document.createElement("button");
+
+        button.textContent = choice;
+
+        button.onclick =
+            () => answerNote(choice);
+
+        answers.appendChild(button);
+    });
+}
+
+function answerNote(answer) {
+
+    const status =
+        document.getElementById("noteStatus");
+
+    if(answer === currentNote) {
+
+        status.textContent =
+            "🎉 Správne! Výborne!";
+
+        noteScore++;
+
+        document.getElementById("noteScore")
+            .textContent = noteScore;
+
+        updateBadgeProgress("notes");
+
+        confetti();
+
+    } else {
+
+        status.textContent =
+            "🙂 Skús to ešte raz.";
+    }
+
+    setTimeout(newNoteQuestion, 900);
+}
+
+newNoteQuestion();
+
+
+/* =========================
+   INTERVALY
+========================= */
+
+let intervalGame = "picture";
+let currentInterval = 5;
+let intervalScore = 0;
+
+const intervalNames = [
+    "Prima",
+    "Sekunda",
+    "Tercia",
+    "Kvarta",
+    "Kvinta",
+    "Sexta",
+    "Septima",
+    "Oktáva"
+];
+
+const intervalPairs = [
+    ["C","C"],
+    ["C","D"],
+    ["C","E"],
+    ["C","F"],
+    ["C","G"],
+    ["C","A"],
+    ["C","H"],
+    ["C","C"]
+];
+
+function newInterval() {
+
+    currentInterval =
+        Math.floor(Math.random()*8);
+
+    document.getElementById("intervalNote1")
+        .textContent =
+        intervalPairs[currentInterval][0];
+
+    document.getElementById("intervalNote2")
+        .textContent =
+        intervalPairs[currentInterval][1];
+
+    const container =
+        document.getElementById("intervalAnswers");
+
+    container.innerHTML = "";
+
+    intervalNames.forEach((name,index) => {
+
+        const button =
+            document.createElement("button");
+
+        button.textContent = name;
+
+        button.onclick =
+            () => answerInterval(index);
+
+        container.appendChild(button);
+    });
+}
+
+function answerInterval(answer) {
+
+    const status =
+        document.getElementById("intervalStatus");
+
+    if(answer === currentInterval) {
+
+        status.textContent =
+            "🎉 Správne!";
+
+        intervalScore++;
+
+        document.getElementById("intervalScore")
+            .textContent = intervalScore;
+
+        updateBadgeProgress("intervals");
+
+        confetti();
+
+    } else {
+
+        status.textContent =
+            "🙂 Nie celkom. Skús znova.";
+    }
+
+    setTimeout(newInterval, 900);
+}
+
+function playInterval() {
+
+    const index =
+        Math.floor(Math.random()*7);
+
+    const freqs =
+        [261.63,293.66,329.63,349.23,392,440,493.88];
+
+    playTone(freqs[0],.4);
+
+    setTimeout(() => {
+        playTone(freqs[index],.5);
+    },600);
+}
+
+newInterval();
+
+
+/* =========================
+   AKORDY
+========================= */
+
+let selectedChord = [];
+
+function selectChordNote(note) {
+
+    if(selectedChord.includes(note)) {
+
+        selectedChord =
+            selectedChord.filter(n => n !== note);
+
+    } else {
+
+        if(selectedChord.length < 3)
+            selectedChord.push(note);
+    }
+
+    document.getElementById("chordStatus")
+        .textContent =
+        selectedChord.length
+        ? "Vybrané: " + selectedChord.join(" – ")
+        : "Vyber tri tóny.";
+}
+
+function checkChord() {
+
+    const correct =
+        ["C","E","G"];
+
+    const sortedSelected =
+        [...selectedChord].sort();
+
+    const sortedCorrect =
+        [...correct].sort();
+
+    if(
+        JSON.stringify(sortedSelected) ===
+        JSON.stringify(sortedCorrect)
+    ) {
+
+        document.getElementById("chordStatus")
+            .textContent =
+            "🎉 Výborne! Poskladal si C dur.";
+
+        updateBadgeProgress("chords");
+
+        confetti();
+
+    } else {
+
+        document.getElementById("chordStatus")
+            .textContent =
+            "🙂 Skús C – E – G.";
+    }
+}
+
+function playChord() {
+
+    playTone(261.63,.8);
+
+    setTimeout(() => playTone(329.63,.8),100);
+    setTimeout(() => playTone(392,.8),200);
+}
+
+function chordTypeAnswer(type) {
+
+    document.getElementById("chordTypeStatus")
+        .textContent =
+        type === "dur"
+        ? "😁 Správne! Toto je DUR."
+        : "🙂 Skús rozlíšiť veselý charakter od mol.";
+}
+
+
+/* =========================
+   SLUCH
+========================= */
+
+let higherCorrect;
+
+function playHigherLower() {
+
+    const first =
+        261.63;
+
+    const second =
+        Math.random() > .5
+        ? 329.63
+        : 196;
+
+    higherCorrect =
+        second > first
+        ? "higher"
+        : "lower";
+
+    playTone(first,.5);
+
+    setTimeout(() => {
+        playTone(second,.5);
+    },700);
+
+    document.getElementById("higherStatus")
+        .textContent =
+        "Teraz vyber vyšší alebo nižší.";
+}
+
+function higherLowerAnswer(answer) {
+
+    if(answer === higherCorrect) {
+
+        document.getElementById("higherStatus")
+            .textContent =
+            "🎉 Správne!";
+
+        updateBadgeProgress("ear");
+
+        confetti();
+
+    } else {
+
+        document.getElementById("higherStatus")
+            .textContent =
+            "🙂 Skús ešte raz.";
+    }
+}
+
+function playMelody() {
+
+    const melody =
+        [261.63,293.66,329.63];
+
+    melody.forEach((freq,index) => {
+
+        setTimeout(() => {
+            playTone(freq,.45);
+        },index*550);
+
+    });
+
+    document.getElementById("melodyStatus")
+        .textContent =
+        "🎵 C – D – E";
+}
+
+let recognitionNote = "C";
+
+function playRecognitionTone() {
+
+    const notes = {
+        C:261.63,
+        D:293.66,
+        E:329.63
+    };
+
+    recognitionNote =
+        ["C","D","E"]
+        [Math.floor(Math.random()*3)];
+
+    playTone(notes[recognitionNote],.7);
+
+    document.getElementById("recognitionStatus")
+        .textContent =
+        "Aký tón si počul?";
+}
+
+function recognitionAnswer(answer) {
+
+    if(answer === recognitionNote) {
+
+        document.getElementById("recognitionStatus")
+            .textContent =
+            "🎉 Správne!";
+
+        updateBadgeProgress("ear");
+
+        confetti();
+
+    } else {
+
+        document.getElementById("recognitionStatus")
+            .textContent =
+            "🙂 Skús ešte raz.";
+    }
+}
+
+
+/* =========================
+   ODZNAKY
+========================= */
+
+let badgeProgress = {
+
+    rhythm: 0,
+    notes: 0,
+    intervals: 0,
+    chords: 0,
+    ear: 0
+};
+
+function updateBadgeProgress(type) {
+
+    badgeProgress[type]++;
+
+    if(badgeProgress[type] >= 10) {
+
+        const badge =
+            document.getElementById(
+                "badge-" + type
+            );
+
+        if(!badge.classList.contains("unlocked")) {
+
+            badge.classList.add("unlocked");
+
+            confetti();
+
+            setTimeout(() => {
+
+                alert(
+                    "🏅 Získal/a si nový odznak!"
+                );
+
+            },300);
+        }
+    }
+
+    checkAllBadges();
+}
+
+function checkAllBadges() {
+
+    const all =
+        Object.values(badgeProgress)
+        .every(value => value >= 10);
+
+    if(all) {
+
+        document.getElementById("badge-all")
+            .classList.add("unlocked");
+    }
+}
+
+
+/* =========================
+   UVÍTACIA ANIMÁCIA
+========================= */
+
+window.addEventListener("load", () => {
+
+    setTimeout(() => {
+
+        document.querySelector(".hero h1")
+            .style.transform =
+            "scale(1.05)";
+
+        setTimeout(() => {
+
+            document.querySelector(".hero h1")
+                .style.transform =
+                "scale(1)";
+
+        },300);
+
+    },300);
+});
+
+</script>
 
 </body>
 </html>
