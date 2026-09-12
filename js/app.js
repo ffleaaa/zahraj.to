@@ -1,3 +1,1 @@
-console.log(
-"ZAHRAJ TO načítané."
-);
+console.log("🎵 ZAHRAJ TO pripravené");
