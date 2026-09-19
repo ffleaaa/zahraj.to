@@ -757,62 +757,33 @@ footer{
         Aktuálne tempo:
         <strong id="bpmValue">80 BPM</strong>
     </p>
-
-
     <h2>📏 Takt</h2>
 
-    <div class="controls">
-
-        <button onclick="setMeter('2/4')" id="meter24">
-            2/4
-        </button>
-
-        <button onclick="setMeter('3/4')" id="meter34">
-            3/4
-        </button>
-
-        <button onclick="setMeter('4/4')" id="meter44">
-            4/4
-        </button>
-
-        <button onclick="setMeter('5/4')" id="meter54">
-            5/4
-        </button>
-
-        <button onclick="setMeter('6/8')" id="meter68">
-            6/8
-        </button>
-
-        <button onclick="setMeter('7/8')" id="meter78">
-            7/8
-        </button>
-
+    <div class="status">
+        Všetky rytmické cvičenia sú v takte <strong>4/4</strong> a majú presne <strong>2 takty</strong>.
     </div>
-
-    <p>
-        Aktuálny takt:
-        <strong id="meterValue">4/4</strong>
-    </p>
-
 
     <h2>🎓 Úroveň</h2>
 
     <div class="controls">
 
         <button
-            class="green"
+            class="green selected"
+            id="levelEasy"
             onclick="setLevel('easy')">
             🟢 ĽAHKÁ
         </button>
 
         <button
             class="yellow"
+            id="levelMedium"
             onclick="setLevel('medium')">
             🟡 STREDNÁ
         </button>
 
         <button
             class="red"
+            id="levelHard"
             onclick="setLevel('hard')">
             🔴 ŤAŽKÁ
         </button>
@@ -823,15 +794,15 @@ footer{
     <div class="rhythm-info">
 
         <div class="info-pill">
-            🎼 2 takty
-        </div>
-
-        <div class="info-pill">
-            📏 <span id="rhythmMeterInfo">4/4</span>
+            🎼 2 takty · 4/4
         </div>
 
         <div class="info-pill">
             ⭐ <span id="rhythmLevelInfo">Ľahká</span>
+        </div>
+
+        <div class="info-pill">
+            📚 Cvičenie <span id="rhythmExerciseInfo">1/30</span>
         </div>
 
     </div>
@@ -1256,35 +1227,18 @@ V tréneri sa používa iba ako vysvetľujúci symbol.
 
 
 <h2 style="margin-top:35px;">
-📏 Takt a taktová čiara
+📏 Takt 4/4 a taktová čiara
 </h2>
 
 <p style="line-height:1.7;">
-
-<strong>Takt</strong> je časový úsek, ktorý obsahuje
-určitý počet dôb.
-
-Napríklad:
-
+V tejto aplikácii sú všetky rytmické cvičenia v <strong>4/4 takte</strong>.
+Jeden takt preto obsahuje štyri štvrťové doby a každé cvičenie má presne dva takty.
+Taktová čiara <strong>|</strong> oddeľuje prvý a druhý takt.
 </p>
 
 <div class="example">
 ♩ ♩ ♩ ♩ | ♩ ♩ ♩ ♩
 </div>
-
-<p style="line-height:1.7;">
-
-V <strong>4/4</strong> má každý takt štyri štvrťové doby.
-
-V <strong>3/4</strong> má každý takt tri štvrťové doby.
-
-V <strong>2/4</strong> má každý takt dve štvrťové doby.
-
-V <strong>6/8</strong> obsahuje takt šesť osminových dôb.
-
-Taktová čiara <strong>|</strong> oddeľuje jednotlivé takty.
-
-</p>
 
 </div>
 
@@ -2169,263 +2123,200 @@ function playTone(freq,duration=.4){
 }
 
 
+
 /* =====================================================
-   RYTMICKÝ ENGINE
+   RYTMICKÝ ENGINE – 30 CVIČENÍ PRE KAŽDÚ ÚROVEŇ
+   VŠETKY CVIČENIA: 2 TAKTY, 4/4
 ===================================================== */
 
 /*
-    Všetky hodnoty sú uložené v šestnástinových
-    jednotkách.
+    Trvanie zapisujeme v šestnástinových jednotkách:
+    celá = 16, polová = 8, štvrťová = 4,
+    osminová = 2, šestnástinová = 1.
 
-    štvrťová = 4
-    osminová = 2
-    šestnástinová = 1
-    polová = 8
-    celá = 16
+    "triplet" je CELÁ skupina troch osminových triol
+    a spolu trvá jednu štvrťovú dobu = 4 jednotky.
+
+    "sextuplet" je CELÁ skupina šiestich tónov
+    a spolu trvá jednu štvrťovú dobu = 4 jednotky.
 */
 
 const NOTE_VALUES={
-
     whole:16,
     half:8,
     quarter:4,
     eighth:2,
     sixteenth:1,
-
     dottedQuarter:6,
     dottedHalf:12,
-
-    triplet:4/3,
-    sextuplet:2/3
-
+    triplet:4,
+    sextuplet:4
 };
 
-
 const REST_VALUES={
-
     wholeRest:16,
     halfRest:8,
     quarterRest:4,
     eighthRest:2,
     sixteenthRest:1
-
 };
-
-
-/*
-    Základné vzory.
-
-    Každý pattern obsahuje presne
-    jeden takt.
-*/
-
-const rhythmPatterns={
-
-easy:[
-
-    ["quarter","quarter","quarter","quarter"],
-
-    ["half","half"],
-
-    ["quarter","half","quarter"],
-
-    ["whole"],
-
-    ["half","quarter","quarter"],
-
-    ["quarterRest","quarter","half"],
-
-    ["quarter","quarterRest","quarter","quarter"],
-
-    ["halfRest","half"]
-
-],
-
-medium:[
-
-    ["eighth","eighth","quarter","quarter"],
-
-    ["quarter","eighth","eighth","quarter"],
-
-    ["eighth","eighth","eighth","eighth"],
-
-    ["sixteenth","sixteenth","eighth","quarter","quarter"],
-
-    ["quarterRest","eighth","eighth","quarter"],
-
-    ["eighthRest","eighth","quarter","quarter"],
-
-    ["quarter","sixteenth","sixteenth","sixteenth","sixteenth","quarter"],
-
-    ["dottedQuarter","eighth","quarter"],
-
-    ["quarter","dottedQuarter","eighth"]
-
-],
-
-hard:[
-
-    ["triplet","quarter","quarter"],
-
-    ["quarter","triplet","quarter"],
-
-    ["sextuplet","quarter","quarter"],
-
-    ["sixteenth","sixteenth","triplet","quarter"],
-
-    ["dottedQuarter","eighth","triplet"],
-
-    ["eighth","triplet","eighth","quarter"],
-
-    ["sixteenth","sixteenth","sixteenth","sixteenth","dottedQuarter","eighth"],
-
-    ["quarterRest","triplet","quarter"],
-
-    ["eighthRest","triplet","quarter","eighth"]
-
-]
-
-};
-
-
-let bpm=80;
-
-let meter="4/4";
-
-let level="easy";
-
-let currentRhythm=[];
-
-let expectedEvents=[];
-
-let tapTimes=[];
-
-let rhythmCompleted=false;
-
-let rhythmCorrect=0;
-
-
-/*
-    Koľko šestnástinových jednotiek
-    má jeden takt?
-*/
-
-function meterUnits(){
-
-    const parts=
-        meter.split("/");
-
-    const numerator=
-        Number(parts[0]);
-
-    const denominator=
-        Number(parts[1]);
-
-    /*
-        4/4:
-        4 štvrťové = 16 šestnástin
-
-        3/4:
-        3 štvrťové = 12
-
-        6/8:
-        6 osminových = 12
-    */
-
-    return numerator*(16/denominator);
-}
-
-
-/*
-    Pri 6/8 a 7/8 potrebujeme
-    vzory v osminových hodnotách.
-*/
-
-function patternDuration(pattern){
-
-    return pattern.reduce(
-        (sum,type)=>{
-
-            return sum+
-                getDuration(type);
-
-        },0
-    );
-}
-
 
 function getDuration(type){
-
-    return (
-        NOTE_VALUES[type] ??
-        REST_VALUES[type] ??
-        0
-    );
+    return NOTE_VALUES[type] ?? REST_VALUES[type] ?? 0;
 }
 
+function patternDuration(pattern){
+    return pattern.reduce((sum,type)=>sum+getDuration(type),0);
+}
 
 /*
-    Vyberie iba pattern,
-    ktorý sa zmestí do aktuálneho taktu.
+    Každý riadok v "bars" je presne jeden takt 4/4 = 16 jednotiek.
+    Z pripravených taktov vytvoríme 30 pevných dvojtaktových cvičení.
 */
+function makeThirtyExercises(bars){
+    const exercises=[];
 
-function getValidPattern(){
+    for(let i=0;i<30;i++){
+        const firstIndex=i % bars.length;
+        const secondIndex=(i*7 + 3 + Math.floor(i/bars.length)*5) % bars.length;
 
-    const available=
-        rhythmPatterns[level]
-        .filter(pattern=>{
-
-            return Math.abs(
-                patternDuration(pattern)
-                -
-                meterUnits()
-            )<.01;
-
-        });
-
-    /*
-        Ak nie je pattern vhodný pre
-        daný takt, vytvoríme bezpečný
-        základný rytmus.
-    */
-
-    if(available.length===0){
-
-        const unit=
-            meter==="6/8" ||
-            meter==="7/8"
-            ? "eighth"
-            : "quarter";
-
-        const count=
-            meter==="6/8"
-            ? 6
-            : meter==="7/8"
-            ? 7
-            : Number(meter.split("/")[0]);
-
-        return Array(count).fill(unit);
+        exercises.push([
+            [...bars[firstIndex]],
+            [...bars[secondIndex]]
+        ]);
     }
 
-    return available[
-        Math.floor(
-            Math.random()*available.length
-        )
-    ];
+    return exercises;
 }
 
+/* -------------------------
+   ĽAHKÁ
+   Povolené:
+   celá, polová, štvrťová, osminová nota,
+   celá a polová pomlčka.
+------------------------- */
+const easyBars=[
+    ["quarter","quarter","quarter","quarter"],
+    ["half","half"],
+    ["whole"],
+    ["half","quarter","quarter"],
+    ["quarter","half","quarter"],
+    ["eighth","eighth","quarter","half"],
+    ["quarter","eighth","eighth","half"],
+    ["half","eighth","eighth","quarter"],
+    ["eighth","eighth","eighth","eighth","half"],
+    ["quarter","quarter","eighth","eighth","quarter"],
+    ["halfRest","half"],
+    ["half","halfRest"],
+    ["quarter","quarter","halfRest"],
+    ["eighth","eighth","quarter","halfRest"],
+    ["wholeRest"]
+];
+
+/* -------------------------
+   STREDNÁ
+   Navyše:
+   šestnástinová nota, triola,
+   štvrťová a osminová pomlčka.
+------------------------- */
+const mediumBars=[
+    ["eighth","eighth","quarter","half"],
+    ["sixteenth","sixteenth","sixteenth","sixteenth","quarter","half"],
+    ["quarter","sixteenth","sixteenth","eighth","half"],
+    ["triplet","quarter","half"],
+    ["quarter","triplet","quarter","quarter"],
+    ["half","triplet","quarter"],
+    ["quarterRest","quarter","half"],
+    ["eighthRest","eighth","quarter","half"],
+    ["quarter","eighthRest","eighth","quarter","quarter"],
+    ["sixteenth","sixteenth","eighth","quarter","half"],
+    ["quarter","sixteenth","sixteenth","sixteenth","sixteenth","quarter"],
+    ["triplet","eighth","eighth","quarter","quarter"],
+    ["eighth","eighth","triplet","half"],
+    ["quarterRest","triplet","half"],
+    ["halfRest","sixteenth","sixteenth","eighth","quarter"]
+];
+
+/* -------------------------
+   ŤAŽKÁ
+   Navyše:
+   bodkované noty, sextola,
+   šestnástinová pomlčka.
+   Môžu sa opakovať aj prvky z ľahkej a strednej úrovne.
+------------------------- */
+const hardBars=[
+    ["dottedQuarter","eighth","quarter","quarter"],
+    ["quarter","dottedQuarter","eighth","quarter"],
+    ["dottedHalf","quarter"],
+    ["sextuplet","quarter","half"],
+    ["quarter","sextuplet","triplet","quarter"],
+    ["triplet","sextuplet","quarter","quarter"],
+    ["sixteenthRest","sixteenth","eighth","quarter","half"],
+    ["quarter","sixteenthRest","sixteenth","eighth","quarter","quarter"],
+    ["eighthRest","sixteenth","sixteenth","triplet","half"],
+    ["dottedQuarter","eighth","triplet","quarter"],
+    ["sextuplet","eighth","eighth","triplet","quarter"],
+    ["sixteenth","sixteenth","eighth","sextuplet","half"],
+    ["quarterRest","dottedQuarter","eighth","quarter"],
+    ["eighth","eighth","sixteenthRest","sixteenth","eighth","triplet","quarter"],
+    ["sixteenth","sixteenth","sixteenth","sixteenth","triplet","sextuplet","quarter"]
+];
+
+const rhythmExercises={
+    easy:makeThirtyExercises(easyBars),
+    medium:makeThirtyExercises(mediumBars),
+    hard:makeThirtyExercises(hardBars)
+};
 
 /*
-    Dva takty.
+    Kontrola pri načítaní kódu:
+    každý takt musí mať presne 16 jednotiek.
 */
+Object.entries(rhythmExercises).forEach(([exerciseLevel,exercises])=>{
+    exercises.forEach((exercise,exerciseNumber)=>{
+        exercise.forEach((bar,barNumber)=>{
+            if(Math.abs(patternDuration(bar)-16)>.001){
+                console.error(
+                    "Chybný rytmus:",
+                    exerciseLevel,
+                    exerciseNumber+1,
+                    "takt",
+                    barNumber+1,
+                    patternDuration(bar)
+                );
+            }
+        });
+    });
+});
 
-function newRhythm(){
+let bpm=80;
+let level="easy";
+let currentRhythm=[];
+let expectedEvents=[];
+let tapTimes=[];
+let rhythmCompleted=false;
+let rhythmCorrect=0;
 
-    const first=
-        getValidPattern();
+const exerciseIndex={
+    easy:0,
+    medium:0,
+    hard:0
+};
 
-    const second=
-        getValidPattern();
+function quarterMilliseconds(){
+    return 60000/bpm;
+}
+
+function unitMilliseconds(){
+    return quarterMilliseconds()/4;
+}
+
+function loadCurrentRhythm(){
+    clearPlayback();
+
+    const exercise=rhythmExercises[level][exerciseIndex[level]];
+    const first=exercise[0];
+    const second=exercise[1];
 
     currentRhythm=[
         ...first,
@@ -2433,282 +2324,119 @@ function newRhythm(){
         ...second
     ];
 
-    tapTimes=[];
+    resetRhythmAttemptUI(
+        "Cvičenie "+(exerciseIndex[level]+1)+"/30. Najprv si vypočuj vzor."
+    );
 
-    rhythmCompleted=false;
+    document.getElementById("rhythmLevelInfo").textContent=
+        level==="easy"
+        ?"Ľahká"
+        :level==="medium"
+        ?"Stredná"
+        :"Ťažká";
 
-    document.getElementById("tapCount")
-        .textContent="0";
-
-    document.getElementById("rhythmAccuracy")
-        .textContent="Presnosť: —";
-
-    document.getElementById("rhythmProgress")
-        .style.width="0%";
-
-    document.getElementById("rhythmStatus")
-        .className="status";
-
-    document.getElementById("rhythmStatus")
-        .textContent=
-        "Nový rytmus! Najprv si ho vypočuj.";
-
-    document.getElementById("rhythmMeterInfo")
-        .textContent=meter;
-
-    document.getElementById("rhythmLevelInfo")
-        .textContent=
-            level==="easy"
-            ?"Ľahká"
-            :level==="medium"
-            ?"Stredná"
-            :"Ťažká";
+    document.getElementById("rhythmExerciseInfo").textContent=
+        (exerciseIndex[level]+1)+"/30";
 
     renderStaff();
-
     prepareExpectedEvents();
 }
 
-
-/*
-    Prepočet BPM na čas
-    jednej štvrťovej doby.
-*/
-
-function quarterMilliseconds(){
-
-    return 60000/bpm;
+function newRhythm(){
+    exerciseIndex[level]=(exerciseIndex[level]+1)%30;
+    loadCurrentRhythm();
 }
 
+function resetRhythmAttemptUI(message="Skús rytmus znova."){
+    tapTimes=[];
+    rhythmCompleted=false;
 
-/*
-    Pre 6/8 a 7/8 používame
-    osminovú jednotku.
+    document.getElementById("tapCount").textContent="0";
+    document.getElementById("rhythmAccuracy").textContent="Presnosť: —";
+    document.getElementById("rhythmProgress").style.width="0%";
 
-    Pre jednoduché porovnanie
-    však stále počítame presné
-    časové pozície.
-*/
-
-function unitMilliseconds(){
-
-    return quarterMilliseconds()/4;
+    const status=document.getElementById("rhythmStatus");
+    status.className="status";
+    status.textContent=message;
 }
 
-
 /*
-    Vytvorí očakávané časy nástupov.
-
-    Pomlčka nevytvára udalosť.
-
-    Triola a sextola dostanú
-    vlastné rovnomerné pozície.
+    Vytvorí očakávané nástupy tónov.
+    Pomlčky pridajú čas, ale nevytvoria úder.
 */
-
 function prepareExpectedEvents(){
-
     expectedEvents=[];
-
     let time=0;
 
     currentRhythm.forEach(item=>{
+        if(item==="|") return;
 
-        if(item==="|"){
-
-            /*
-                Taktová čiara nemá trvanie.
-            */
-
-            return;
-        }
-
-
-        if(
-            item==="triplet"
-        ){
-
-            const duration=4;
-
-            expectedEvents.push(time);
-
-            expectedEvents.push(
-                time+duration/3
-            );
-
-            expectedEvents.push(
-                time+(duration*2)/3
-            );
-
-            time+=duration;
-
-            return;
-        }
-
-
-        if(
-            item==="sextuplet"
-        ){
-
-            const duration=4;
-
-            for(let i=0;i<6;i++){
-
-                expectedEvents.push(
-                    time+
-                    (duration*i/6)
-                );
-
+        if(item==="triplet"){
+            for(let i=0;i<3;i++){
+                expectedEvents.push(time+(4*i/3));
             }
-
-            time+=duration;
-
+            time+=4;
             return;
         }
 
+        if(item==="sextuplet"){
+            for(let i=0;i<6;i++){
+                expectedEvents.push(time+(4*i/6));
+            }
+            time+=4;
+            return;
+        }
 
-        const duration=
-            getDuration(item);
+        const duration=getDuration(item);
 
-        if(
-            !item.toLowerCase()
-                .includes("rest")
-        ){
-
+        if(!item.toLowerCase().includes("rest")){
             expectedEvents.push(time);
         }
 
         time+=duration;
     });
-
 }
-
 
 /* =====================================================
    ZOBRAZENIE NOTOVEJ OSNOVY
 ===================================================== */
 
 function renderStaff(){
-
-    const group=
-        document.getElementById(
-            "rhythmNotes"
-        );
-
+    const group=document.getElementById("rhythmNotes");
     group.innerHTML="";
 
-
-    /*
-        Rozdelíme rytmus na dva takty.
-    */
-
-    let bars=[
-        [],
-        []
-    ];
-
+    const bars=[[],[]];
     let bar=0;
 
     currentRhythm.forEach(item=>{
-
         if(item==="|"){
             bar=1;
-        }
-        else{
+        }else{
             bars[bar].push(item);
         }
-
     });
 
-
-    drawBar(
-        bars[0],
-        165,
-        false
-    );
-
-    drawBar(
-        bars[1],
-        570,
-        true
-    );
-
+    drawBar(bars[0],165);
+    drawBar(bars[1],570);
 }
 
+function drawBar(pattern,startX){
+    const group=document.getElementById("rhythmNotes");
+    const ns="http://www.w3.org/2000/svg";
 
-/*
-    Nakreslí jeden takt.
-*/
-
-function drawBar(pattern,startX,isSecond){
-
-    const group=
-        document.getElementById(
-            "rhythmNotes"
-        );
-
-
-    /*
-        Taktová čiara na konci.
-    */
-
-    const barLine=
-        document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "line"
-        );
-
-    barLine.setAttribute(
-        "class",
-        "bar-line"
-    );
-
-    barLine.setAttribute(
-        "x1",
-        startX+350
-    );
-
-    barLine.setAttribute(
-        "y1",
-        "65"
-    );
-
-    barLine.setAttribute(
-        "x2",
-        startX+350
-    );
-
-    barLine.setAttribute(
-        "y2",
-        "155"
-    );
-
+    const barLine=document.createElementNS(ns,"line");
+    barLine.setAttribute("class","bar-line");
+    barLine.setAttribute("x1",startX+350);
+    barLine.setAttribute("y1","65");
+    barLine.setAttribute("x2",startX+350);
+    barLine.setAttribute("y2","155");
     group.appendChild(barLine);
-
-
-    /*
-        Dostupná šírka.
-    */
-
-    const total=
-        patternDuration(pattern);
 
     let position=0;
 
-
     pattern.forEach((type,index)=>{
-
-        const duration=
-            getDuration(type);
-
-        const center=
-            startX+
-            (
-                position+
-                duration/2
-            )/
-            Math.max(total,1)
-            *
-            320;
+        const duration=getDuration(type);
+        const center=startX+((position+duration/2)/16)*320;
 
         drawRhythmSymbol(
             type,
@@ -2717,1274 +2445,528 @@ function drawBar(pattern,startX,isSecond){
         );
 
         position+=duration;
-
     });
-
 }
 
+function drawRhythmSymbol(type,x,first){
+    const group=document.getElementById("rhythmNotes");
+    const ns="http://www.w3.org/2000/svg";
 
-/*
-    SVG symboly pre noty.
-*/
+    if(type.includes("Rest")){
+        const text=document.createElementNS(ns,"text");
+        text.setAttribute("x",x);
+        text.setAttribute("y","120");
+        text.setAttribute("text-anchor","middle");
+        text.setAttribute("class","rest-symbol");
 
-function drawRhythmSymbol(
-    type,
-    x,
-    first
-){
+        const symbols={
+            wholeRest:"𝄺",
+            halfRest:"𝄻",
+            quarterRest:"𝄽",
+            eighthRest:"𝄾",
+            sixteenthRest:"𝄿"
+        };
 
-    const group=
-        document.getElementById(
-            "rhythmNotes"
-        );
-
-
-    /*
-        Pomlčky.
-    */
-
-    if(
-        type.includes("Rest")
-    ){
-
-        const text=
-            document.createElementNS(
-                "http://www.w3.org/2000/svg",
-                "text"
-            );
-
-        text.setAttribute(
-            "x",
-            x
-        );
-
-        text.setAttribute(
-            "y",
-            "118"
-        );
-
-        text.setAttribute(
-            "text-anchor",
-            "middle"
-        );
-
-        text.setAttribute(
-            "class",
-            "rest-symbol"
-        );
-
-        let symbol="𝄽";
-
-        if(type==="halfRest")
-            symbol="𝄻";
-
-        if(type==="wholeRest")
-            symbol="𝄺";
-
-        if(type==="eighthRest")
-            symbol="𝄼";
-
-        if(type==="sixteenthRest")
-            symbol="𝄾";
-
-        text.textContent=symbol;
-
+        text.textContent=symbols[type] || "𝄽";
         group.appendChild(text);
-
         return;
     }
-
-
-    /*
-        Triola.
-    */
 
     if(type==="triplet"){
-
-        drawNote(
-            x,
-            110,
-            "eighth",
-            first
-        );
-
-        drawNote(
-            x+18,
-            110,
-            "eighth",
-            false
-        );
-
-        drawNote(
-            x+36,
-            110,
-            "eighth",
-            false
-        );
-
-        const text=
-            document.createElementNS(
-                "http://www.w3.org/2000/svg",
-                "text"
-            );
-
-        text.setAttribute(
-            "x",
-            x+18
-        );
-
-        text.setAttribute(
-            "y",
-            "48"
-        );
-
-        text.setAttribute(
-            "text-anchor",
-            "middle"
-        );
-
-        text.setAttribute(
-            "font-size",
-            "22"
-        );
-
-        text.textContent="3";
-
-        group.appendChild(text);
-
-        return;
-    }
-
-
-    /*
-        Sextola.
-    */
-
-    if(type==="sextuplet"){
-
-        for(let i=0;i<6;i++){
-
-            drawNote(
-                x+(i*11),
-                110,
-                "sixteenth",
-                i===0 && first
-            );
+        const spacing=22;
+        for(let i=0;i<3;i++){
+            drawNote(x+(i-1)*spacing,110,"eighth",first && i===0);
         }
 
-        const text=
-            document.createElementNS(
-                "http://www.w3.org/2000/svg",
-                "text"
-            );
-
-        text.setAttribute(
-            "x",
-            x+28
-        );
-
-        text.setAttribute(
-            "y",
-            "48"
-        );
-
-        text.setAttribute(
-            "text-anchor",
-            "middle"
-        );
-
-        text.setAttribute(
-            "font-size",
-            "20"
-        );
-
-        text.textContent="6";
-
+        const text=document.createElementNS(ns,"text");
+        text.setAttribute("x",x);
+        text.setAttribute("y","42");
+        text.setAttribute("text-anchor","middle");
+        text.setAttribute("font-size","22");
+        text.setAttribute("font-weight","bold");
+        text.textContent="3";
         group.appendChild(text);
-
         return;
     }
 
+    if(type==="sextuplet"){
+        const spacing=12;
+        for(let i=0;i<6;i++){
+            drawNote(x+(i-2.5)*spacing,110,"sixteenth",first && i===0);
+        }
 
-    drawNote(
-        x,
-        110,
-        type,
-        first
-    );
+        const text=document.createElementNS(ns,"text");
+        text.setAttribute("x",x);
+        text.setAttribute("y","36");
+        text.setAttribute("text-anchor","middle");
+        text.setAttribute("font-size","20");
+        text.setAttribute("font-weight","bold");
+        text.textContent="6";
+        group.appendChild(text);
+        return;
+    }
 
+    drawNote(x,110,type,first);
 }
 
+function drawNote(x,y,type,first){
+    const group=document.getElementById("rhythmNotes");
+    const ns="http://www.w3.org/2000/svg";
+    const dotted=type==="dottedQuarter" || type==="dottedHalf";
 
-/*
-    Jedna nota.
-*/
-
-function drawNote(
-    x,
-    y,
-    type,
-    first
-){
-
-    const group=
-        document.getElementById(
-            "rhythmNotes"
-        );
-
-    const ns=
-        "http://www.w3.org/2000/svg";
-
-
-    /*
-        Bodka.
-    */
-
-    const dotted=
-        type==="dottedQuarter" ||
-        type==="dottedHalf";
-
-
-    /*
-        Celá nota.
-    */
-
-    if(
-        type==="whole"
-    ){
-
-        const ellipse=
-            document.createElementNS(
-                ns,
-                "ellipse"
-            );
-
+    if(type==="whole"){
+        const ellipse=document.createElementNS(ns,"ellipse");
         ellipse.setAttribute("cx",x);
         ellipse.setAttribute("cy",y);
         ellipse.setAttribute("rx","17");
         ellipse.setAttribute("ry","10");
-
-        ellipse.setAttribute(
-            "fill",
-            "white"
-        );
-
-        ellipse.setAttribute(
-            "stroke",
-            first
-            ?" #ff5da2"
-            :"#24212a"
-        );
-
-        ellipse.setAttribute(
-            "stroke-width",
-            "3"
-        );
-
+        ellipse.setAttribute("fill","white");
+        ellipse.setAttribute("stroke",first?"#ff5da2":"#24212a");
+        ellipse.setAttribute("stroke-width","3");
+        ellipse.dataset.rhythmNote="1";
         group.appendChild(ellipse);
-
         return;
     }
 
-
-    /*
-        Polová nota.
-    */
-
-    const head=
-        document.createElementNS(
-            ns,
-            "ellipse"
-        );
-
-    head.setAttribute(
-        "cx",
-        x
-    );
-
-    head.setAttribute(
-        "cy",
-        y
-    );
-
-    head.setAttribute(
-        "rx",
-        "13"
-    );
-
-    head.setAttribute(
-        "ry",
-        "9"
-    );
-
-    head.setAttribute(
-        "class",
-        "note-head"
-    );
+    const head=document.createElementNS(ns,"ellipse");
+    head.setAttribute("cx",x);
+    head.setAttribute("cy",y);
+    head.setAttribute("rx","13");
+    head.setAttribute("ry","9");
+    head.setAttribute("class","note-head");
+    head.dataset.rhythmNote="1";
 
     if(first){
-        head.setAttribute(
-            "fill",
-            "#ff5da2"
-        );
+        head.setAttribute("fill","#ff5da2");
     }
 
-    if(
-        type==="half"
-    ){
-
-        head.setAttribute(
-            "fill",
-            "white"
-        );
-
-        head.setAttribute(
-            "stroke",
-            first
-            ?" #ff5da2"
-            :"#24212a"
-        );
-
-        head.setAttribute(
-            "stroke-width",
-            "3"
-        );
+    if(type==="half" || type==="dottedHalf"){
+        head.setAttribute("fill","white");
+        head.setAttribute("stroke",first?"#ff5da2":"#24212a");
+        head.setAttribute("stroke-width","3");
     }
 
     group.appendChild(head);
 
-
-    /*
-        Stopka.
-    */
-
-    const stem=
-        document.createElementNS(
-            ns,
-            "line"
-        );
-
-    stem.setAttribute(
-        "x1",
-        x+11
-    );
-
-    stem.setAttribute(
-        "y1",
-        y
-    );
-
-    stem.setAttribute(
-        "x2",
-        x+11
-    );
-
-    stem.setAttribute(
-        "y2",
-        y-55
-    );
-
-    stem.setAttribute(
-        "class",
-        "note-stem"
-    );
+    const stem=document.createElementNS(ns,"line");
+    stem.setAttribute("x1",x+11);
+    stem.setAttribute("y1",y);
+    stem.setAttribute("x2",x+11);
+    stem.setAttribute("y2",y-55);
+    stem.setAttribute("class","note-stem");
 
     if(first){
-        stem.setAttribute(
-            "stroke",
-            "#ff5da2"
-        );
+        stem.setAttribute("stroke","#ff5da2");
     }
 
     group.appendChild(stem);
 
-
-    /*
-        Trámce pre osminy a šestnástiny.
-    */
-
-    if(
-        type==="eighth" ||
-        type==="sixteenth"
-    ){
-
-        const beam=
-            document.createElementNS(
-                ns,
-                "line"
-            );
-
-        beam.setAttribute(
-            "x1",
-            x+10
-        );
-
-        beam.setAttribute(
-            "y1",
-            y-55
-        );
-
-        beam.setAttribute(
-            "x2",
-            x+30
-        );
-
-        beam.setAttribute(
-            "y2",
-            y-55
-        );
-
-        beam.setAttribute(
-            "class",
-            "note-beam"
-        );
-
+    if(type==="eighth" || type==="sixteenth"){
+        const beam=document.createElementNS(ns,"line");
+        beam.setAttribute("x1",x+10);
+        beam.setAttribute("y1",y-55);
+        beam.setAttribute("x2",x+30);
+        beam.setAttribute("y2",y-55);
+        beam.setAttribute("class","note-beam");
         group.appendChild(beam);
 
-
-        if(
-            type==="sixteenth"
-        ){
-
-            const beam2=
-                document.createElementNS(
-                    ns,
-                    "line"
-                );
-
-            beam2.setAttribute(
-                "x1",
-                x+10
-            );
-
-            beam2.setAttribute(
-                "y1",
-                y-46
-            );
-
-            beam2.setAttribute(
-                "x2",
-                x+30
-            );
-
-            beam2.setAttribute(
-                "y2",
-                y-46
-            );
-
-            beam2.setAttribute(
-                "class",
-                "note-beam"
-            );
-
-            group.appendChild(
-                beam2
-            );
+        if(type==="sixteenth"){
+            const beam2=document.createElementNS(ns,"line");
+            beam2.setAttribute("x1",x+10);
+            beam2.setAttribute("y1",y-46);
+            beam2.setAttribute("x2",x+30);
+            beam2.setAttribute("y2",y-46);
+            beam2.setAttribute("class","note-beam");
+            group.appendChild(beam2);
         }
-
     }
-
-
-    /*
-        Bodka.
-    */
 
     if(dotted){
-
-        const dot=
-            document.createElementNS(
-                ns,
-                "circle"
-            );
-
-        dot.setAttribute(
-            "cx",
-            x+23
-        );
-
-        dot.setAttribute(
-            "cy",
-            y
-        );
-
-        dot.setAttribute(
-            "r",
-            "4"
-        );
-
-        dot.setAttribute(
-            "fill",
-            "#24212a"
-        );
-
+        const dot=document.createElementNS(ns,"circle");
+        dot.setAttribute("cx",x+23);
+        dot.setAttribute("cy",y);
+        dot.setAttribute("r","4");
+        dot.setAttribute("fill","#24212a");
         group.appendChild(dot);
     }
-
 }
-
 
 /* =====================================================
    PREHRÁVANIE RYTMU
+   Zvuk presne sleduje zobrazený zápis.
 ===================================================== */
 
 let playbackTimers=[];
 
-
 function clearPlayback(){
-
-    playbackTimers.forEach(
-        timer=>clearTimeout(timer)
-    );
-
+    playbackTimers.forEach(timer=>clearTimeout(timer));
     playbackTimers=[];
+    clearHighlights();
 }
 
+function scheduleRhythmNote(delayMs,durationMs,noteIndex){
+    playbackTimers.push(
+        setTimeout(()=>{
+            highlightEvent(noteIndex);
+
+            playPiano(
+                261.63,
+                Math.max(.08,durationMs/1000*.82),
+                .26
+            );
+        },delayMs)
+    );
+}
 
 function playRhythm(){
-
     clearPlayback();
-
     prepareExpectedEvents();
 
-    const unit=
-        unitMilliseconds();
-
+    const unit=unitMilliseconds();
     let time=0;
-
-    let eventIndex=0;
+    let noteIndex=0;
 
     currentRhythm.forEach(item=>{
-
-        if(item==="|"){
-
-            return;
-        }
-
-
-        const duration=
-            getDuration(item);
-
-
-        /*
-            Triola.
-        */
+        if(item==="|") return;
 
         if(item==="triplet"){
+            const oneTripletMs=unit*(4/3);
 
             for(let i=0;i<3;i++){
-
-                const delay=
-                    time+
-                    (
-                        unit*
-                        4*
-                        i/3
-                    );
-
-                playbackTimers.push(
-                    setTimeout(
-                        ()=>{
-                            highlightEvent(
-                                eventIndex
-                            );
-
-                            playPiano(
-                                261.63,
-                                .32,
-                                .28
-                            );
-
-                            eventIndex++;
-                        },
-                        delay
-                    )
+                scheduleRhythmNote(
+                    time+(oneTripletMs*i),
+                    oneTripletMs,
+                    noteIndex
                 );
+                noteIndex++;
             }
 
             time+=unit*4;
-
             return;
         }
-
-
-        /*
-            Sextola.
-        */
 
         if(item==="sextuplet"){
+            const oneSextupletMs=unit*(4/6);
 
             for(let i=0;i<6;i++){
-
-                const delay=
-                    time+
-                    (
-                        unit*
-                        4*
-                        i/6
-                    );
-
-                playbackTimers.push(
-                    setTimeout(
-                        ()=>{
-                            highlightEvent(
-                                eventIndex
-                            );
-
-                            playPiano(
-                                261.63,
-                                .22,
-                                .23
-                            );
-
-                            eventIndex++;
-                        },
-                        delay
-                    )
+                scheduleRhythmNote(
+                    time+(oneSextupletMs*i),
+                    oneSextupletMs,
+                    noteIndex
                 );
+                noteIndex++;
             }
 
             time+=unit*4;
-
             return;
         }
 
+        const durationUnits=getDuration(item);
+        const durationMs=durationUnits*unit;
 
-        /*
-            Bežná nota.
-        */
-
-        if(
-            !item.includes("Rest")
-        ){
-
-            const delay=time;
-
-            playbackTimers.push(
-                setTimeout(
-                    ()=>{
-                        highlightEvent(
-                            eventIndex
-                        );
-
-                        playPiano(
-                            261.63,
-                            Math.max(
-                                .15,
-                                duration*unit/1000*.75
-                            ),
-                            .28
-                        );
-
-                        eventIndex++;
-                    },
-                    delay
-                )
+        if(!item.toLowerCase().includes("rest")){
+            scheduleRhythmNote(
+                time,
+                durationMs,
+                noteIndex
             );
+            noteIndex++;
         }
 
-        time+=
-            duration*unit;
-
+        /* Pri pomlčke sa iba posunie čas – nič nezaznie. */
+        time+=durationMs;
     });
 
-
     playbackTimers.push(
-        setTimeout(
-            ()=>{
-                clearHighlights();
-
-                document.getElementById(
-                    "rhythmStatus"
-                ).textContent=
-                    "Teraz ho skús zopakovať! 👆";
-
-            },
-            time+300
-        )
+        setTimeout(()=>{
+            clearHighlights();
+            document.getElementById("rhythmStatus").textContent=
+                "Teraz ho skús zopakovať! 👆";
+        },time+250)
     );
 }
 
-
 function highlightEvent(index){
+    const group=document.getElementById("rhythmNotes");
+    const notes=group.querySelectorAll('[data-rhythm-note="1"]');
 
-    const group=
-        document.getElementById(
-            "rhythmNotes"
-        );
+    notes.forEach(node=>node.classList.remove("first-beat"));
 
-    const nodes=
-        group.querySelectorAll(
-            "ellipse,circle"
-        );
-
-    nodes.forEach(
-        node=>
-            node.classList.remove(
-                "first-beat"
-            )
-    );
-
-    /*
-        Jemný vizuálny signál.
-    */
-
-    if(nodes[index]){
-
-        nodes[index].classList.add(
-            "first-beat"
-        );
+    if(notes[index]){
+        notes[index].classList.add("first-beat");
     }
 }
 
-
 function clearHighlights(){
-
-    document
-        .querySelectorAll(
-            ".first-beat"
-        )
-        .forEach(
-            el=>
-                el.classList.remove(
-                    "first-beat"
-                )
-        );
+    document.querySelectorAll(".first-beat").forEach(
+        el=>el.classList.remove("first-beat")
+    );
 }
 
-
 /* =====================================================
-   BPM + TAKTY + ÚROVNE
+   BPM + ÚROVNE
 ===================================================== */
 
 function setBPM(value){
-
     bpm=value;
 
-    document.getElementById(
-        "bpmValue"
-    ).textContent=
-        value+" BPM";
+    document.getElementById("bpmValue").textContent=value+" BPM";
 
-    document.querySelectorAll(
-        '[id^="bpm"]'
-    ).forEach(
-        b=>b.classList.remove(
-            "selected"
-        )
+    document.querySelectorAll('[id^="bpm"]').forEach(
+        b=>b.classList.remove("selected")
     );
 
-    document.getElementById(
-        "bpm"+value
-    ).classList.add(
-        "selected"
-    );
+    document.getElementById("bpm"+value).classList.add("selected");
 
-    newRhythm();
+    resetRhythmAttemptUI(
+        "Tempo je "+value+" BPM. Cvičenie zostáva rovnaké – vypočuj si ho znova."
+    );
+    prepareExpectedEvents();
 }
 
+function setLevel(value){
+    level=value;
+    exerciseIndex[level]=0;
 
-function setMeter(value){
-
-    meter=value;
-
-    document.getElementById(
-        "meterValue"
-    ).textContent=value;
-
-    document.getElementById(
-        "rhythmMeterInfo"
-    ).textContent=value;
-
-    document.querySelectorAll(
-        '[id^="meter"]'
-    ).forEach(
-        b=>b.classList.remove(
-            "selected"
-        )
+    document.querySelectorAll("#levelEasy,#levelMedium,#levelHard").forEach(
+        b=>b.classList.remove("selected")
     );
 
     const id=
-        "meter"+
-        value.replace("/","");
-
-    document.getElementById(id)
-        .classList.add(
-            "selected"
-        );
-
-    /*
-        Toto je dôležité:
-        pri zmene taktu sa okamžite
-        vytvorí nový rytmus vhodný
-        pre nový takt.
-    */
-
-    newRhythm();
-}
-
-
-function setLevel(value){
-
-    level=value;
-
-    document.getElementById(
-        "rhythmLevelInfo"
-    ).textContent=
         value==="easy"
-        ?"Ľahká"
+        ?"levelEasy"
         :value==="medium"
-        ?"Stredná"
-        :"Ťažká";
+        ?"levelMedium"
+        :"levelHard";
 
-    newRhythm();
+    document.getElementById(id).classList.add("selected");
+
+    loadCurrentRhythm();
 }
-
 
 /* =====================================================
    ŤUKANIE
 ===================================================== */
 
 function tapRhythm(){
+    if(rhythmCompleted) return;
 
-    if(rhythmCompleted)
-        return;
-
-    const now=
-        performance.now();
-
-    tapTimes.push(now);
-
-    document.getElementById(
-        "tapCount"
-    ).textContent=
-        tapTimes.length;
-
-
-    /*
-        Počet úderov môže byť najviac
-        počet očakávaných udalostí.
-    */
-
-    if(
-        tapTimes.length>=
-        expectedEvents.length
-    ){
-
-        evaluateRhythm();
+    if(expectedEvents.length===0){
+        prepareExpectedEvents();
     }
 
+    const now=performance.now();
+    tapTimes.push(now);
+
+    document.getElementById("tapCount").textContent=tapTimes.length;
+
+    if(tapTimes.length>=expectedEvents.length){
+        evaluateRhythm();
+    }
 }
 
-
-/*
-    Vyhodnotenie:
-
-    Každý odťukaný úder sa porovná
-    s najbližším očakávaným časom.
-
-    Presnosť 60 % je potrebná na úspech.
-*/
-
 function evaluateRhythm(){
-
-    if(rhythmCompleted)
+    if(rhythmCompleted || expectedEvents.length===0 || tapTimes.length===0){
         return;
+    }
 
     rhythmCompleted=true;
 
-    if(expectedEvents.length===0)
-        return;
-
+    const firstTap=tapTimes[0];
+    const normalizedTaps=tapTimes.map(t=>(t-firstTap)/1000);
 
     /*
-        Prevod na relatívne časy.
+        Prvý skutočný tón berieme ako čas 0.
+        Takto sa správne vyhodnotia aj pomlčky vo vnútri rytmu.
     */
+    const firstExpected=expectedEvents[0];
+    const expectedSeconds=expectedEvents.map(
+        units=>(units-firstExpected)*unitMilliseconds()/1000
+    );
 
-    const firstTap=
-        tapTimes[0];
-
-    const normalizedTaps=
-        tapTimes.map(
-            t=>
-                (
-                    t-firstTap
-                )/1000
-        );
-
-
-    const expectedSeconds=
-        expectedEvents.map(
-            units=>
-                units*
-                unitMilliseconds()/
-                1000
-        );
-
+    /*
+        Tolerancia sa prispôsobuje BPM:
+        pomalšie tempo = trochu väčšie časové okno,
+        rýchlejšie tempo = menšie časové okno.
+    */
+    const tolerance=Math.max(
+        .12,
+        Math.min(
+            .30,
+            (quarterMilliseconds()/1000)*.30
+        )
+    );
 
     let totalAccuracy=0;
 
+    for(let i=0;i<expectedSeconds.length;i++){
+        if(normalizedTaps[i]===undefined) continue;
 
-    for(
-        let i=0;
-        i<expectedSeconds.length;
-        i++
-    ){
+        const difference=Math.abs(
+            normalizedTaps[i]-expectedSeconds[i]
+        );
 
-        if(normalizedTaps[i]===undefined)
-            continue;
-
-
-        const difference=
-            Math.abs(
-                normalizedTaps[i]
-                -
-                expectedSeconds[i]
-            );
-
-
-        /*
-            Do 100 ms = takmer perfektné.
-            Do 350 ms = ešte prijateľné.
-        */
-
-        const score=
-            Math.max(
-                0,
-                1-
-                difference/.35
-            );
+        const score=Math.max(
+            0,
+            1-(difference/tolerance)
+        );
 
         totalAccuracy+=score;
-
     }
 
+    const accuracy=Math.round(
+        totalAccuracy/expectedSeconds.length*100
+    );
 
-    const accuracy=
-        Math.round(
-            totalAccuracy/
-            expectedSeconds.length*
-            100
-        );
-
-
-    document.getElementById(
-        "rhythmAccuracy"
-    ).textContent=
+    document.getElementById("rhythmAccuracy").textContent=
         "Presnosť: "+accuracy+" %";
 
+    document.getElementById("rhythmProgress").style.width=
+        Math.min(accuracy,100)+"%";
 
-    document.getElementById(
-        "rhythmProgress"
-    ).style.width=
-        Math.min(
-            accuracy,
-            100
-        )+"%";
-
-
-    const status=
-        document.getElementById(
-            "rhythmStatus"
-        );
-
+    const status=document.getElementById("rhythmStatus");
 
     if(
         accuracy>=60 &&
-        tapTimes.length===
-        expectedEvents.length
+        tapTimes.length===expectedEvents.length
     ){
-
-        status.className=
-            "status success";
-
+        status.className="status success";
         status.textContent=
-            "🎉 Výborne! Rytmus si zvládol/zvládla správne!";
+            "🎉 Výborne! Cvičenie "+(exerciseIndex[level]+1)+"/30 je správne. Nasleduje ďalší rytmus.";
 
         rhythmCorrect++;
-
-        updateBadgeProgress(
-            "rhythm"
-        );
-
+        updateBadgeProgress("rhythm");
         confetti();
 
-
-        setTimeout(
-            ()=>{
-                newRhythm();
-            },
-            1800
-        );
-
-    }
-    else{
-
-        status.className=
-            "status error";
-
+        setTimeout(()=>{
+            newRhythm();
+        },1800);
+    }else{
+        status.className="status error";
         status.textContent=
-            "🙂 Ešte to nie je ono. Skús rytmus znova.";
+            "🙂 Ešte to nie je ono. Vypočuj si vzor a skús rovnaký rytmus znova.";
 
-        /*
-            Umožníme ďalší pokus.
-        */
-
-        setTimeout(
-            ()=>{
-                resetTaps();
-            },
-            1200
-        );
+        setTimeout(()=>{
+            resetTaps();
+        },1200);
     }
-
 }
-
 
 function resetTaps(){
-
-    tapTimes=[];
-
-    rhythmCompleted=false;
-
-    document.getElementById(
-        "tapCount"
-    ).textContent="0";
-
-    document.getElementById(
-        "rhythmAccuracy"
-    ).textContent=
-        "Presnosť: —";
-
-    document.getElementById(
-        "rhythmProgress"
-    ).style.width="0%";
-
-    document.getElementById(
-        "rhythmStatus"
-    ).className="status";
-
-    document.getElementById(
-        "rhythmStatus"
-    ).textContent=
-        "Skús rytmus znova.";
+    resetRhythmAttemptUI("Skús rytmus znova.");
 }
 
-
-/*
-    Medzerník.
-*/
-
-document.addEventListener(
-    "keydown",
-    function(e){
-
-        if(
-            e.code==="Space" &&
-            document
-            .getElementById("rhythm")
-            .classList
-            .contains("active")
-        ){
-
-            e.preventDefault();
-
-            tapRhythm();
-        }
-
+/* Medzerník funguje rovnako ako tlačidlo ŤUKAJ. */
+document.addEventListener("keydown",function(e){
+    if(
+        e.code==="Space" &&
+        document.getElementById("rhythm").classList.contains("active")
+    ){
+        e.preventDefault();
+        tapRhythm();
     }
-);
-
+});
 
 /* =====================================================
    MIKROFÓN
 ===================================================== */
 
 let micStream=null;
-
 let micContext=null;
-
 let analyser=null;
-
 let micAnimation=null;
-
 let lastMicTap=0;
 
-
 async function startMic(){
-
     try{
-
-        if(!navigator.mediaDevices ||
-           !navigator.mediaDevices.getUserMedia){
-
-            throw new Error(
-                "Mikrofón nie je podporovaný."
-            );
+        if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+            throw new Error("Mikrofón nie je podporovaný.");
         }
 
+        stopMic(false);
 
-        micStream=
-            await navigator.mediaDevices
-            .getUserMedia({
-                audio:{
-                    echoCancellation:false,
-                    noiseSuppression:false,
-                    autoGainControl:false
-                }
-            });
+        micStream=await navigator.mediaDevices.getUserMedia({
+            audio:{
+                echoCancellation:false,
+                noiseSuppression:false,
+                autoGainControl:false
+            }
+        });
 
+        micContext=new(
+            window.AudioContext ||
+            window.webkitAudioContext
+        )();
 
-        micContext=
-            new(
-                window.AudioContext ||
-                window.webkitAudioContext
-            )();
-
-
-        const source=
-            micContext
-            .createMediaStreamSource(
-                micStream
-            );
-
-
-        analyser=
-            micContext
-            .createAnalyser();
-
+        const source=micContext.createMediaStreamSource(micStream);
+        analyser=micContext.createAnalyser();
         analyser.fftSize=512;
+        source.connect(analyser);
 
-        source.connect(
-            analyser
-        );
-
-
-        document.getElementById(
-            "rhythmStatus"
-        ).textContent=
-            "🎤 Mikrofón je zapnutý. Tlieskaj alebo hraj rytmus.";
-
+        const status=document.getElementById("rhythmStatus");
+        status.className="status";
+        status.textContent=
+            "🎤 Mikrofón je zapnutý. Tlieskaj, luskní alebo zahraj rytmus.";
 
         detectMicrophone();
-
-    }
-    catch(error){
-
-        document.getElementById(
-            "rhythmStatus"
-        ).className=
-            "status error";
-
-        document.getElementById(
-            "rhythmStatus"
-        ).textContent=
+    }catch(error){
+        const status=document.getElementById("rhythmStatus");
+        status.className="status error";
+        status.textContent=
             "❌ Mikrofón sa nepodarilo zapnúť. Povoľ prístup k mikrofónu.";
-
     }
-
 }
 
-
-function stopMic(){
-
+function stopMic(showMessage=true){
     if(micStream){
-
-        micStream
-            .getTracks()
-            .forEach(
-                track=>
-                    track.stop()
-            );
-
+        micStream.getTracks().forEach(track=>track.stop());
         micStream=null;
     }
 
-
     if(micAnimation){
-
-        cancelAnimationFrame(
-            micAnimation
-        );
-
+        cancelAnimationFrame(micAnimation);
         micAnimation=null;
     }
 
+    analyser=null;
 
-    document.getElementById(
-        "rhythmStatus"
-    ).textContent=
-        "🎤 Mikrofón vypnutý.";
+    if(micContext && micContext.state!=="closed"){
+        micContext.close().catch(()=>{});
+    }
+    micContext=null;
+
+    if(showMessage){
+        document.getElementById("rhythmStatus").textContent=
+            "🎤 Mikrofón vypnutý.";
+    }
 }
 
-
-/*
-    Detekcia náhleho zvukového impulzu.
-
-    Nevyhodnocuje výšku tónu.
-    Sleduje iba rytmický útok.
-*/
-
 function detectMicrophone(){
+    if(!analyser) return;
 
-    if(!analyser)
-        return;
-
-
-    const data=
-        new Uint8Array(
-            analyser.fftSize
-        );
-
-
-    analyser.getByteTimeDomainData(
-        data
-    );
-
+    const data=new Uint8Array(analyser.fftSize);
+    analyser.getByteTimeDomainData(data);
 
     let sum=0;
 
-
-    for(
-        let i=0;
-        i<data.length;
-        i++
-    ){
-
-        const value=
-            (data[i]-128)/128;
-
+    for(let i=0;i<data.length;i++){
+        const value=(data[i]-128)/128;
         sum+=value*value;
-
     }
 
+    const volume=Math.sqrt(sum/data.length);
+    const now=performance.now();
 
-    const volume=
-        Math.sqrt(
-            sum/data.length
-        );
-
-
-    const now=
-        performance.now();
-
-
-    if(
-        volume>.10 &&
-        now-lastMicTap>150
-    ){
-
+    /*
+        Krátky cooldown zabráni tomu, aby jeden úder
+        vytvoril viacero falošných ťuknutí.
+    */
+    if(volume>.10 && now-lastMicTap>120){
         lastMicTap=now;
-
         tapRhythm();
-
     }
 
-
-    micAnimation=
-        requestAnimationFrame(
-            detectMicrophone
-        );
-
+    micAnimation=requestAnimationFrame(detectMicrophone);
 }
 
 
@@ -4741,15 +3723,7 @@ window.addEventListener(
         ).classList.add(
             "selected"
         );
-
-        document.getElementById(
-            "meter44"
-        ).classList.add(
-            "selected"
-        );
-
-
-        newRhythm();
+        loadCurrentRhythm();
 
         newNoteQuestion();
 
