@@ -429,13 +429,59 @@ button.selected{
    NOTY
 ========================= */
 
-.note{
-    font-size:100px;
-    text-align:center;
-    background:#f7f0ff;
+.real-stave-container{
+    background:white;
     border-radius:25px;
-    margin:20px 0;
-    padding:20px;
+    padding:15px 20px;
+    margin:25px 0;
+    box-shadow:inset 0 0 0 3px #eee7fa;
+    overflow-x:auto;
+}
+
+#noteStave{
+    width:100%;
+    min-width:700px;
+    height:260px;
+}
+
+.note-staff-line{
+    stroke:#45404c;
+    stroke-width:2.5;
+}
+
+.note-clef{
+    fill:#443b55;
+    font-family:"Bravura","Noto Music","Segoe UI Symbol","Arial Unicode MS",serif;
+    font-weight:normal;
+}
+
+.note-head-real{
+    fill:#24212a;
+    stroke:#24212a;
+    stroke-width:2;
+}
+
+.note-stem-real{
+    stroke:#24212a;
+    stroke-width:3;
+}
+
+.note-accidental-real{
+    fill:#7654c4;
+    font-family:"Segoe UI Symbol","Arial Unicode MS",sans-serif;
+    font-size:30px;
+    font-weight:bold;
+}
+
+.note-ledger{
+    stroke:#45404c;
+    stroke-width:2.5;
+}
+
+.note-name-real{
+    fill:#7654c4;
+    font-size:18px;
+    font-weight:bold;
 }
 
 .answers{
@@ -449,33 +495,9 @@ button.selected{
     background:#dff3ff;
 }
 
-.stave{
-    position:relative;
-    height:170px;
-    margin:25px 0;
-    background:white;
-    border-radius:20px;
-    overflow:hidden;
-}
-
-.line{
-    position:absolute;
-    left:5%;
-    right:5%;
-    height:3px;
-    background:#555;
-}
-
-.line1{top:45px}
-.line2{top:65px}
-.line3{top:85px}
-.line4{top:105px}
-.line5{top:125px}
-
-.stave-note{
-    position:absolute;
-    font-size:45px;
-    transform:translate(-50%,-50%);
+.quiz-score{
+    font-weight:bold;
+    text-align:center;
 }
 
 /* =========================
@@ -749,6 +771,17 @@ footer{
 
         <button onclick="setBPM(120)" id="bpm120">
             120 BPM
+        </button>
+
+    </div>
+
+    <div class="controls metronome-controls">
+
+        <button
+            class="purple selected"
+            id="metronomeToggle"
+            onclick="toggleMetronome()">
+            🔊 METRONÓM: ZAPNUTÝ
         </button>
 
     </div>
@@ -1259,59 +1292,40 @@ Taktová čiara <strong>|</strong> oddeľuje prvý a druhý takt.
 
 <button
 class="primary"
+id="noteTrebleButton"
 onclick="noteMode='treble';newNoteQuestion()">
 🎻 Husľový kľúč
 </button>
 
 <button
 class="blue"
+id="noteBassButton"
 onclick="noteMode='bass';newNoteQuestion()">
 🎸 Basový kľúč
 </button>
 
 <button
 class="purple"
+id="noteAccidentalButton"
 onclick="noteMode='accidentals';newNoteQuestion()">
 ♯ / ♭ Posuvky
 </button>
 
 </div>
 
-<h2 id="noteModeTitle">
-🎻 Husľový kľúč
-</h2>
+<h2 id="noteModeTitle">🎻 Husľový kľúč</h2>
 
-<div class="stave">
-
-<div class="line line1"></div>
-<div class="line line2"></div>
-<div class="line line3"></div>
-<div class="line line4"></div>
-<div class="line line5"></div>
-
-<div
-class="stave-note"
-id="staveNote"
-style="left:50%;top:85px;">
-●
+<div class="real-stave-container">
+    <svg id="noteStave" viewBox="0 0 900 260" preserveAspectRatio="xMidYMid meet" aria-label="Notová osnova">
+        <g id="noteStaveGraphics"></g>
+    </svg>
 </div>
 
-</div>
+<h2>Aká je to nota?</h2>
 
-<h2>
-Aká je to nota?
-</h2>
+<div class="answers" id="noteAnswers"></div>
 
-<div
-class="answers"
-id="noteAnswers">
-</div>
-
-<div
-class="status"
-id="noteStatus">
-Vyber správnu odpoveď.
-</div>
+<div class="status" id="noteStatus">Vyber správnu odpoveď.</div>
 
 <p class="quiz-score">
 Správne:
@@ -2597,11 +2611,46 @@ function drawNote(x,y,type,first){
 ===================================================== */
 
 let playbackTimers=[];
+let metronomeEnabled=true;
 
 function clearPlayback(){
     playbackTimers.forEach(timer=>clearTimeout(timer));
     playbackTimers=[];
     clearHighlights();
+}
+
+function playMetronomeClick(strong=false){
+    const ctx=getAudio();
+    const now=ctx.currentTime;
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+
+    osc.type="square";
+    osc.frequency.value=strong?1200:850;
+
+    gain.gain.setValueAtTime(.0001,now);
+    gain.gain.exponentialRampToValueAtTime(strong?.20:.12,now+.004);
+    gain.gain.exponentialRampToValueAtTime(.0001,now+.055);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now+.07);
+}
+
+function scheduleMetronome(startDelayMs,totalDurationMs){
+    if(!metronomeEnabled) return;
+
+    const quarter=quarterMilliseconds();
+    const beats=Math.round(totalDurationMs/quarter);
+
+    for(let beat=0;beat<beats;beat++){
+        playbackTimers.push(
+            setTimeout(()=>{
+                playMetronomeClick(beat%4===0);
+            },startDelayMs+beat*quarter)
+        );
+    }
 }
 
 function scheduleRhythmNote(delayMs,durationMs,noteIndex){
@@ -2625,6 +2674,13 @@ function playRhythm(){
     const unit=unitMilliseconds();
     let time=0;
     let noteIndex=0;
+
+    /*
+       Jeden klik metronómu = jedna štvrťová doba.
+       V 4/4 teda zaznie 8 klikov pre dva takty.
+       Prvý klik každého taktu je zvýraznený.
+    */
+    scheduleMetronome(0,unit*32);
 
     currentRhythm.forEach(item=>{
         if(item==="|") return;
@@ -2673,7 +2729,6 @@ function playRhythm(){
             noteIndex++;
         }
 
-        /* Pri pomlčke sa iba posunie čas – nič nezaznie. */
         time+=durationMs;
     });
 
@@ -2684,6 +2739,17 @@ function playRhythm(){
                 "Teraz ho skús zopakovať! 👆";
         },time+250)
     );
+}
+
+function toggleMetronome(){
+    metronomeEnabled=!metronomeEnabled;
+
+    const button=document.getElementById("metronomeToggle");
+
+    button.classList.toggle("selected",metronomeEnabled);
+    button.textContent=metronomeEnabled
+        ?"🔊 METRONÓM: ZAPNUTÝ"
+        :"🔇 METRONÓM: VYPNUTÝ";
 }
 
 function highlightEvent(index){
@@ -2971,191 +3037,208 @@ function detectMicrophone(){
 
 
 /* =====================================================
-   NOTY
+   NOTY – REÁLNA NOTOVÁ OSNOVA
 ===================================================== */
 
 let noteMode="treble";
-
-let currentNote="G";
-
+let currentNote=null;
 let noteScore=0;
 
+/*
+   staffStep určuje polohu tónu na osnove.
+   0 = spodná linka, 1 = prvá medzera, 2 = druhá linka atď.
+   Vďaka tomu sa tón vždy zobrazí podľa zvoleného kľúča.
+*/
+const trebleNoteData=[
+    {name:"C",label:"C",step:-2},
+    {name:"D",label:"D",step:-1},
+    {name:"E",label:"E",step:0},
+    {name:"F",label:"F",step:1},
+    {name:"G",label:"G",step:2},
+    {name:"A",label:"A",step:3},
+    {name:"H",label:"H",step:4}
+];
 
-const trebleNotes=
-    ["C","D","E","F","G","A","H"];
+const bassNoteData=[
+    {name:"C",label:"C",step:3},
+    {name:"D",label:"D",step:4},
+    {name:"E",label:"E",step:5},
+    {name:"F",label:"F",step:6},
+    {name:"G",label:"G",step:0},
+    {name:"A",label:"A",step:1},
+    {name:"H",label:"H",step:2}
+];
 
-const bassNotes=
-    ["C","D","E","F","G","A","H"];
+const accidentalNoteData=[
+    {name:"Fis",label:"Fis",base:"F",accidental:"♯",step:1},
+    {name:"Cis",label:"Cis",base:"C",accidental:"♯",step:-2},
+    {name:"B",label:"B",base:"H",accidental:"♭",step:2},
+    {name:"Es",label:"Es",base:"E",accidental:"♭",step:5}
+];
 
-const accidentalNotes=
-    ["Fis","Cis","B","Es"];
+function noteModeList(){
+    if(noteMode==="treble") return trebleNoteData;
+    if(noteMode==="bass") return bassNoteData;
+    return accidentalNoteData;
+}
 
+function updateNoteModeButtons(){
+    document.getElementById("noteTrebleButton").classList.toggle("selected",noteMode==="treble");
+    document.getElementById("noteBassButton").classList.toggle("selected",noteMode==="bass");
+    document.getElementById("noteAccidentalButton").classList.toggle("selected",noteMode==="accidentals");
+}
+
+function drawNoteStave(note){
+    const group=document.getElementById("noteStaveGraphics");
+    group.innerHTML="";
+    const ns="http://www.w3.org/2000/svg";
+
+    const xLeft=90;
+    const xRight=840;
+    const bottomY=150;
+    const stepPx=11;
+
+    /* Päť skutočných osnovových čiar. */
+    for(let i=0;i<5;i++){
+        const line=document.createElementNS(ns,"line");
+        const y=bottomY-i*stepPx*2;
+        line.setAttribute("x1",xLeft);
+        line.setAttribute("x2",xRight);
+        line.setAttribute("y1",y);
+        line.setAttribute("y2",y);
+        line.setAttribute("class","note-staff-line");
+        group.appendChild(line);
+    }
+
+    /* Kľúč je vždy úplne na začiatku notovej osnovy. */
+    const clef=document.createElementNS(ns,"text");
+    clef.setAttribute("x","105");
+    clef.setAttribute("y",noteMode==="treble"?151:145);
+    clef.setAttribute("class","note-clef");
+    clef.setAttribute("font-size",noteMode==="treble"?104:82);
+    clef.textContent=noteMode==="treble"?"𝄞":"𝄢";
+    group.appendChild(clef);
+
+    const noteX=510;
+    const y=bottomY-note.step*stepPx;
+
+    /* Pomocné čiary pre tóny mimo osnovy. */
+    const ledgerSteps=[];
+    if(note.step>=5){
+        for(let step=5;step<=note.step;step+=2) ledgerSteps.push(step);
+    }
+    if(note.step<=-6){
+        for(let step=-6;step>=note.step;step-=2) ledgerSteps.push(step);
+    }
+
+    ledgerSteps.forEach(step=>{
+        const ledger=document.createElementNS(ns,"line");
+        ledger.setAttribute("x1",noteX-28);
+        ledger.setAttribute("x2",noteX+28);
+        ledger.setAttribute("y1",bottomY-step*stepPx);
+        ledger.setAttribute("y2",bottomY-step*stepPx);
+        ledger.setAttribute("class","note-ledger");
+        group.appendChild(ledger);
+    });
+
+    /* Posuvka je priamo pred notou. */
+    if(note.accidental){
+        const accidental=document.createElementNS(ns,"text");
+        accidental.setAttribute("x",noteX-45);
+        accidental.setAttribute("y",y+10);
+        accidental.setAttribute("text-anchor","middle");
+        accidental.setAttribute("class","note-accidental-real");
+        accidental.textContent=note.accidental;
+        group.appendChild(accidental);
+    }
+
+    const head=document.createElementNS(ns,"ellipse");
+    head.setAttribute("cx",noteX);
+    head.setAttribute("cy",y);
+    head.setAttribute("rx","12");
+    head.setAttribute("ry","8");
+    head.setAttribute("transform",`rotate(-20 ${noteX} ${y})`);
+    head.setAttribute("class","note-head-real");
+    group.appendChild(head);
+
+    const stem=document.createElementNS(ns,"line");
+    stem.setAttribute("x1",noteX+10);
+    stem.setAttribute("x2",noteX+10);
+    stem.setAttribute("y1",y-1);
+    stem.setAttribute("y2",y-58);
+    stem.setAttribute("class","note-stem-real");
+    group.appendChild(stem);
+
+    /* Malý popis tónu pod osnovou pomáha deťom pri učení. */
+    const caption=document.createElementNS(ns,"text");
+    caption.setAttribute("x",noteX);
+    caption.setAttribute("y","215");
+    caption.setAttribute("text-anchor","middle");
+    caption.setAttribute("class","note-name-real");
+    caption.textContent="?";
+    group.appendChild(caption);
+}
 
 function newNoteQuestion(){
+    const list=noteModeList();
+    currentNote=list[Math.floor(Math.random()*list.length)];
 
-    let list;
-
-    if(noteMode==="treble")
-        list=trebleNotes;
-
-    else if(noteMode==="bass")
-        list=bassNotes;
-
-    else
-        list=accidentalNotes;
-
-
-    currentNote=
-        list[
-            Math.floor(
-                Math.random()*list.length
-            )
-        ];
-
-
-    document.getElementById(
-        "noteModeTitle"
-    ).textContent=
+    document.getElementById("noteModeTitle").textContent=
         noteMode==="treble"
-        ?"🎻 Husľový kľúč"
+        ?"🎻 Husľový kľúč – poznaj notu"
         :noteMode==="bass"
-        ?"🎸 Basový kľúč"
-        :"♯ / ♭ Posuvky";
+        ?"🎸 Basový kľúč – poznaj notu"
+        :"♯ / ♭ Posuvky – poznaj notu";
 
-
-    const note=
-        document.getElementById(
-            "staveNote"
-        );
-
-
-    const positions={
-        C:120,
-        D:108,
-        E:96,
-        F:84,
-        G:72,
-        A:60,
-        H:48
-    };
-
-
-    note.style.top=
-        (positions[currentNote]||85)
-        +"px";
-
-
+    updateNoteModeButtons();
+    drawNoteStave(currentNote);
     createNoteAnswers(list);
-}
 
+    document.getElementById("noteStatus").className="status";
+    document.getElementById("noteStatus").textContent="Vyber správnu odpoveď.";
+}
 
 function createNoteAnswers(list){
-
-    const answers=
-        document.getElementById(
-            "noteAnswers"
-        );
-
+    const answers=document.getElementById("noteAnswers");
     answers.innerHTML="";
 
+    let choices=[currentNote];
 
-    let choices=[
-        currentNote
-    ];
-
-
-    while(
-        choices.length<3
-    ){
-
-        const candidate=
-            list[
-                Math.floor(
-                    Math.random()*list.length
-                )
-            ];
-
-
-        if(
-            !choices.includes(candidate)
-        ){
-
+    while(choices.length<3){
+        const candidate=list[Math.floor(Math.random()*list.length)];
+        if(!choices.some(choice=>choice.name===candidate.name)){
             choices.push(candidate);
-
         }
-
     }
 
+    choices.sort(()=>Math.random()-.5);
 
-    choices.sort(
-        ()=>Math.random()-.5
-    );
-
-
-    choices.forEach(
-        choice=>{
-
-            const button=
-                document.createElement(
-                    "button"
-                );
-
-            button.textContent=
-                choice;
-
-            button.onclick=
-                ()=>answerNote(choice);
-
-            answers.appendChild(
-                button
-            );
-
-        }
-    );
+    choices.forEach(choice=>{
+        const button=document.createElement("button");
+        button.textContent=choice.label;
+        button.onclick=()=>answerNote(choice);
+        answers.appendChild(button);
+    });
 }
-
 
 function answerNote(answer){
+    const status=document.getElementById("noteStatus");
 
-    const status=
-        document.getElementById(
-            "noteStatus"
-        );
-
-
-    if(answer===currentNote){
-
-        status.textContent=
-            "🎉 Správne! Výborne!";
+    if(answer.name===currentNote.name){
+        status.className="status success";
+        status.textContent="🎉 Správne! Výborne!";
 
         noteScore++;
-
-        document.getElementById(
-            "noteScore"
-        ).textContent=
-            noteScore;
-
-        updateBadgeProgress(
-            "notes"
-        );
-
+        document.getElementById("noteScore").textContent=noteScore;
+        updateBadgeProgress("notes");
         confetti();
 
+        setTimeout(newNoteQuestion,900);
+    }else{
+        status.className="status error";
+        status.textContent="🙂 Nesprávne. Pozri sa ešte raz na polohu noty a kľúč.";
     }
-    else{
-
-        status.textContent=
-            "🙂 Skús to ešte raz.";
-
-    }
-
-
-    setTimeout(
-        newNoteQuestion,
-        900
-    );
 }
-
 
 /* =====================================================
    INTERVALY
@@ -3714,7 +3797,7 @@ window.addEventListener(
         /*
             Predvolené nastavenia:
             80 BPM
-            4/4
+            metronóm zapnutý
             ľahká úroveň
         */
 
