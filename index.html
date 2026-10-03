@@ -515,6 +515,53 @@ button.selected{
     border-radius:25px;
 }
 
+.interval-stave-container{
+    background:white;
+    border-radius:25px;
+    padding:15px;
+    margin:20px 0;
+    box-shadow:inset 0 0 0 3px #eee7fa;
+    overflow-x:auto;
+}
+
+#intervalStave,#buildIntervalStave{
+    width:100%;
+    min-width:650px;
+    height:260px;
+}
+
+.interval-staff-line{stroke:#45404c;stroke-width:2;}
+.interval-clef{font-family:serif;fill:#24212a;}
+.interval-note-head{fill:#24212a;}
+.interval-note-stem{stroke:#24212a;stroke-width:3;}
+.interval-note-ledger{stroke:#45404c;stroke-width:2;}
+.interval-octave-note{
+    text-align:center;
+    min-height:28px;
+    font-weight:900;
+    color:#7654c4;
+}
+.interval-hint{
+    background:#f5efff;
+    padding:14px 18px;
+    border-radius:18px;
+    line-height:1.6;
+}
+.interval-build-card{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:25px;
+    padding:22px;
+    background:#eef8ff;
+    border-radius:25px;
+    margin:20px 0;
+}
+.interval-build-note{font-size:48px;font-weight:900;}
+.interval-build-arrow{font-size:40px;}
+.interval-target-label{font-size:15px;font-weight:bold;opacity:.7;text-align:center;}
+.interval-target{font-size:32px;font-weight:900;color:#7654c4;text-align:center;}
+
 /* =========================
    AKORDY
 ========================= */
@@ -1115,22 +1162,6 @@ na <strong>tri rovnaké časti</strong>.
 </div>
 
 
-<div class="lesson">
-
-<div class="lesson-symbol">♬♬</div>
-
-<h3>Sextola</h3>
-
-<p>
-Sextola rozdelí čas jednej štvrťovej doby
-na <strong>šesť rovnakých častí</strong>.
-</p>
-
-<div class="example">
-♬⁶
-</div>
-
-</div>
 
 
 <div class="lesson">
@@ -1293,21 +1324,21 @@ Taktová čiara <strong>|</strong> oddeľuje prvý a druhý takt.
 <button
 class="primary"
 id="noteTrebleButton"
-onclick="noteMode='treble';newNoteQuestion()">
+onclick="selectNoteMode('treble')">
 🎻 Husľový kľúč
 </button>
 
 <button
 class="blue"
 id="noteBassButton"
-onclick="noteMode='bass';newNoteQuestion()">
+onclick="selectNoteMode('bass')">
 🎸 Basový kľúč
 </button>
 
 <button
 class="purple"
 id="noteAccidentalButton"
-onclick="noteMode='accidentals';newNoteQuestion()">
+onclick="selectNoteMode('accidentals')">
 ♯ / ♭ Posuvky
 </button>
 
@@ -1421,48 +1452,75 @@ Znižuje tón o pol tónu.
 
 <button
 class="primary"
-onclick="intervalGame='picture';newInterval()">
+onclick="selectIntervalMode('picture')">
 🎨 Podľa obrázka
 </button>
 
-<button
-class="blue"
-onclick="intervalGame='ear';playInterval()">
-👂 Podľa sluchu
-</button>
 
 <button
 class="purple"
-onclick="intervalGame='build';newInterval()">
+onclick="selectIntervalMode('build')">
 🎯 Postav interval
 </button>
 
 </div>
 
-<div class="interval-display">
+<div id="intervalPictureGame">
 
-<span id="intervalNote1">C</span>
+<h2>🎨 1. Podľa obrázka</h2>
 
-<span>→</span>
+<p class="interval-hint">
+Pracujeme iba s tónmi <strong>C dur</strong> (C – D – E – F – G – A – H).
+Prvá nota nemusí byť C. Urči, aký interval tvoria dve zobrazené noty.
+</p>
 
-<span id="intervalNote2">G</span>
+<div class="interval-stave-container">
+    <svg id="intervalStave" viewBox="0 0 900 260" preserveAspectRatio="xMidYMid meet">
+        <g id="intervalStaveGraphics"></g>
+    </svg>
+</div>
+
+<div class="interval-octave-note" id="intervalOctaveNote"></div>
+
+<h3>Aký je to interval?</h3>
+<div class="answers" id="intervalAnswers"></div>
+<div class="status" id="intervalStatus">Vyber správnu odpoveď.</div>
 
 </div>
 
-<h2>
-Aký je to interval?
-</h2>
+<div id="intervalBuildGame" style="display:none;">
 
-<div
-class="answers"
-id="intervalAnswers">
+<h2>🎯 2. Vyskladaj interval</h2>
+
+<p class="interval-hint">
+Zobrazená je prvá nota a interval, ktorý máš vytvoriť.
+Vyber druhú notu z tónov <strong>C dur</strong>.
+</p>
+
+<div class="interval-build-card">
+    <div class="interval-build-note" id="buildStartNote">C</div>
+    <div class="interval-build-arrow">→</div>
+    <div>
+        <div class="interval-target-label">Vyskladaj</div>
+        <div class="interval-target" id="buildTargetInterval">Kvinta</div>
+    </div>
 </div>
 
-<div
-class="status"
-id="intervalStatus">
-Vyber správnu odpoveď.
+<div class="interval-stave-container">
+    <svg id="buildIntervalStave" viewBox="0 0 900 260" preserveAspectRatio="xMidYMid meet">
+        <g id="buildIntervalStaveGraphics"></g>
+    </svg>
 </div>
+
+<h3>Vyber druhú notu:</h3>
+<div class="answers" id="buildIntervalAnswers"></div>
+<div class="status" id="buildIntervalStatus">Vyber správnu notu.</div>
+
+</div>
+
+<p class="quiz-score">
+Správne: <span id="intervalScore">0</span>/10
+</p>
 
 <p class="quiz-score">
 Správne:
@@ -2151,8 +2209,7 @@ function playTone(freq,duration=.4){
     "triplet" je CELÁ skupina troch osminových triol
     a spolu trvá jednu štvrťovú dobu = 4 jednotky.
 
-    "sextuplet" je CELÁ skupina šiestich tónov
-    a spolu trvá jednu štvrťovú dobu = 4 jednotky.
+    Trioly používame iba v ŤAŽKEJ úrovni.
 */
 
 const NOTE_VALUES={
@@ -2164,7 +2221,6 @@ const NOTE_VALUES={
     dottedQuarter:6,
     dottedHalf:12,
     triplet:4,
-    sextuplet:4
 };
 
 const REST_VALUES={
@@ -2237,43 +2293,41 @@ const mediumBars=[
     ["eighth","eighth","quarter","half"],
     ["sixteenth","sixteenth","sixteenth","sixteenth","quarter","half"],
     ["quarter","sixteenth","sixteenth","eighth","half"],
-    ["triplet","quarter","half"],
-    ["quarter","triplet","quarter","quarter"],
-    ["half","triplet","quarter"],
+    ["sixteenth","sixteenth","eighth","quarter","half"],
     ["quarterRest","quarter","half"],
     ["eighthRest","eighth","quarter","half"],
     ["quarter","eighthRest","eighth","quarter","quarter"],
     ["sixteenth","sixteenth","eighth","quarter","half"],
     ["quarter","sixteenth","sixteenth","sixteenth","sixteenth","quarter"],
-    ["triplet","eighth","eighth","quarter","quarter"],
-    ["eighth","eighth","triplet","half"],
-    ["quarterRest","triplet","half"],
-    ["halfRest","sixteenth","sixteenth","eighth","quarter"]
+    ["sixteenth","sixteenth","sixteenth","sixteenth","eighth","eighth","quarter"],
+    ["halfRest","sixteenth","sixteenth","eighth","quarter"],
+    ["quarter","quarterRest","sixteenth","sixteenth","eighth","quarter"],
+    ["eighth","eighth","quarterRest","quarter","quarter"],
+    ["sixteenth","sixteenth","quarter","eighthRest","eighth","quarter"],
+    ["quarter","sixteenth","sixteenth","quarter","eighth","eighth"]
 ];
 
 /* -------------------------
    ŤAŽKÁ
-   Navyše:
-   bodkované noty, sextola,
-   šestnástinová pomlčka.
+   Navyše: trioly, bodkované noty a šestnástinová pomlčka.
    Môžu sa opakovať aj prvky z ľahkej a strednej úrovne.
 ------------------------- */
 const hardBars=[
     ["dottedQuarter","eighth","quarter","quarter"],
     ["quarter","dottedQuarter","eighth","quarter"],
     ["dottedHalf","quarter"],
-    ["sextuplet","quarter","half"],
-    ["quarter","sextuplet","triplet","quarter"],
-    ["triplet","sextuplet","quarter","quarter"],
-    ["sixteenthRest","sixteenth","eighth","quarter","half"],
-    ["quarter","sixteenthRest","sixteenth","eighth","quarter","quarter"],
+    ["triplet","quarter","half"],
+    ["quarter","triplet","quarter","quarter"],
+    ["triplet","eighth","eighth","quarter","quarter"],
+    ["quarterRest","triplet","half"],
     ["eighthRest","sixteenth","sixteenth","triplet","half"],
     ["dottedQuarter","eighth","triplet","quarter"],
-    ["sextuplet","eighth","eighth","triplet","quarter"],
-    ["sixteenth","sixteenth","eighth","sextuplet","half"],
+    ["sixteenthRest","sixteenth","eighth","triplet","half"],
+    ["quarter","sixteenthRest","sixteenth","triplet","quarter","quarter"],
+    ["dottedHalf","eighth","eighth","quarter"],
     ["quarterRest","dottedQuarter","eighth","quarter"],
     ["eighth","eighth","sixteenthRest","sixteenth","eighth","triplet","quarter"],
-    ["sixteenth","sixteenth","sixteenth","sixteenth","triplet","sextuplet","quarter"]
+    ["sixteenth","sixteenth","sixteenth","sixteenth","triplet","quarter","quarter"]
 ];
 
 const rhythmExercises={
@@ -2393,14 +2447,6 @@ function prepareExpectedEvents(){
             return;
         }
 
-        if(item==="sextuplet"){
-            for(let i=0;i<6;i++){
-                expectedEvents.push(time+(4*i/6));
-            }
-            time+=4;
-            return;
-        }
-
         const duration=getDuration(item);
 
         if(!item.toLowerCase().includes("rest")){
@@ -2503,7 +2549,7 @@ function drawRhythmSymbol(type,x,first){
         return;
     }
 
-    if(type==="sextuplet"){
+    if(type===""){
         const spacing=12;
         for(let i=0;i<6;i++){
             drawNote(x+(i-2.5)*spacing,110,"sixteenth",first && i===0);
@@ -2692,22 +2738,6 @@ function playRhythm(){
                 scheduleRhythmNote(
                     time+(oneTripletMs*i),
                     oneTripletMs,
-                    noteIndex
-                );
-                noteIndex++;
-            }
-
-            time+=unit*4;
-            return;
-        }
-
-        if(item==="sextuplet"){
-            const oneSextupletMs=unit*(4/6);
-
-            for(let i=0;i<6;i++){
-                scheduleRhythmNote(
-                    time+(oneSextupletMs*i),
-                    oneSextupletMs,
                     noteIndex
                 );
                 noteIndex++;
@@ -3043,43 +3073,59 @@ function detectMicrophone(){
 let noteMode="treble";
 let currentNote=null;
 let noteScore=0;
+let noteQueue=[];
+let noteQueueIndex=0;
 
-/*
-   staffStep určuje polohu tónu na osnove.
-   0 = spodná linka, 1 = prvá medzera, 2 = druhá linka atď.
-   Vďaka tomu sa tón vždy zobrazí podľa zvoleného kľúča.
-*/
 const trebleNoteData=[
-    {name:"C",label:"C",step:-2},
-    {name:"D",label:"D",step:-1},
-    {name:"E",label:"E",step:0},
-    {name:"F",label:"F",step:1},
-    {name:"G",label:"G",step:2},
-    {name:"A",label:"A",step:3},
-    {name:"H",label:"H",step:4}
+    {name:"C",label:"C",step:-2,freq:261.63},
+    {name:"D",label:"D",step:-1,freq:293.66},
+    {name:"E",label:"E",step:0,freq:329.63},
+    {name:"F",label:"F",step:1,freq:349.23},
+    {name:"G",label:"G",step:2,freq:392.00},
+    {name:"A",label:"A",step:3,freq:440.00},
+    {name:"H",label:"H",step:4,freq:493.88}
 ];
 
 const bassNoteData=[
-    {name:"C",label:"C",step:3},
-    {name:"D",label:"D",step:4},
-    {name:"E",label:"E",step:5},
-    {name:"F",label:"F",step:6},
-    {name:"G",label:"G",step:0},
-    {name:"A",label:"A",step:1},
-    {name:"H",label:"H",step:2}
+    {name:"C",label:"C",step:3,freq:261.63},
+    {name:"D",label:"D",step:4,freq:293.66},
+    {name:"E",label:"E",step:5,freq:329.63},
+    {name:"F",label:"F",step:6,freq:349.23},
+    {name:"G",label:"G",step:0,freq:392.00},
+    {name:"A",label:"A",step:1,freq:440.00},
+    {name:"H",label:"H",step:2,freq:493.88}
 ];
 
+/* Posuvky patria iba pod husľový kľúč. */
 const accidentalNoteData=[
-    {name:"Fis",label:"Fis",base:"F",accidental:"♯",step:1},
-    {name:"Cis",label:"Cis",base:"C",accidental:"♯",step:-2},
-    {name:"B",label:"B",base:"H",accidental:"♭",step:2},
-    {name:"Es",label:"Es",base:"E",accidental:"♭",step:5}
+    {name:"Fis",label:"Fis",base:"F",accidental:"♯",step:1,freq:369.99},
+    {name:"Cis",label:"Cis",base:"C",accidental:"♯",step:-2,freq:277.18},
+    {name:"Gis",label:"Gis",base:"G",accidental:"♯",step:2,freq:415.30},
+    {name:"Dis",label:"Dis",base:"D",accidental:"♯",step:-1,freq:311.13},
+    {name:"B",label:"B",base:"H",accidental:"♭",step:4,freq:466.16},
+    {name:"Es",label:"Es",base:"E",accidental:"♭",step:0,freq:311.13},
+    {name:"As",label:"As",base:"A",accidental:"♭",step:3,freq:415.30},
+    {name:"Des",label:"Des",base:"D",accidental:"♭",step:-1,freq:277.18}
 ];
 
 function noteModeList(){
     if(noteMode==="treble") return trebleNoteData;
     if(noteMode==="bass") return bassNoteData;
     return accidentalNoteData;
+}
+
+function shuffleArray(array){
+    const copy=[...array];
+    for(let i=copy.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [copy[i],copy[j]]=[copy[j],copy[i]];
+    }
+    return copy;
+}
+
+function refillNoteQueue(){
+    noteQueue=shuffleArray(noteModeList());
+    noteQueueIndex=0;
 }
 
 function updateNoteModeButtons(){
@@ -3092,60 +3138,40 @@ function drawNoteStave(note){
     const group=document.getElementById("noteStaveGraphics");
     group.innerHTML="";
     const ns="http://www.w3.org/2000/svg";
+    const xLeft=90,xRight=840,bottomY=150,stepPx=11,noteX=510;
 
-    const xLeft=90;
-    const xRight=840;
-    const bottomY=150;
-    const stepPx=11;
-
-    /* Päť skutočných osnovových čiar. */
     for(let i=0;i<5;i++){
         const line=document.createElementNS(ns,"line");
         const y=bottomY-i*stepPx*2;
-        line.setAttribute("x1",xLeft);
-        line.setAttribute("x2",xRight);
-        line.setAttribute("y1",y);
-        line.setAttribute("y2",y);
+        line.setAttribute("x1",xLeft); line.setAttribute("x2",xRight);
+        line.setAttribute("y1",y); line.setAttribute("y2",y);
         line.setAttribute("class","note-staff-line");
         group.appendChild(line);
     }
 
-    /* Kľúč je vždy úplne na začiatku notovej osnovy. */
     const clef=document.createElementNS(ns,"text");
     clef.setAttribute("x","105");
-    clef.setAttribute("y",noteMode==="treble"?151:145);
+    clef.setAttribute("y",noteMode==="treble"||noteMode==="accidentals"?151:145);
     clef.setAttribute("class","note-clef");
-    clef.setAttribute("font-size",noteMode==="treble"?104:82);
-    clef.textContent=noteMode==="treble"?"𝄞":"𝄢";
+    clef.setAttribute("font-size",noteMode==="treble"||noteMode==="accidentals"?104:82);
+    clef.textContent=noteMode==="treble"||noteMode==="accidentals"?"𝄞":"𝄢";
     group.appendChild(clef);
 
-    const noteX=510;
     const y=bottomY-note.step*stepPx;
-
-    /* Pomocné čiary pre tóny mimo osnovy. */
     const ledgerSteps=[];
-    if(note.step>=5){
-        for(let step=5;step<=note.step;step+=2) ledgerSteps.push(step);
-    }
-    if(note.step<=-6){
-        for(let step=-6;step>=note.step;step-=2) ledgerSteps.push(step);
-    }
-
+    if(note.step>=5) for(let step=5;step<=note.step;step+=2) ledgerSteps.push(step);
+    if(note.step<=-6) for(let step=-6;step>=note.step;step-=2) ledgerSteps.push(step);
     ledgerSteps.forEach(step=>{
         const ledger=document.createElementNS(ns,"line");
-        ledger.setAttribute("x1",noteX-28);
-        ledger.setAttribute("x2",noteX+28);
-        ledger.setAttribute("y1",bottomY-step*stepPx);
-        ledger.setAttribute("y2",bottomY-step*stepPx);
+        ledger.setAttribute("x1",noteX-28); ledger.setAttribute("x2",noteX+28);
+        ledger.setAttribute("y1",bottomY-step*stepPx); ledger.setAttribute("y2",bottomY-step*stepPx);
         ledger.setAttribute("class","note-ledger");
         group.appendChild(ledger);
     });
 
-    /* Posuvka je priamo pred notou. */
     if(note.accidental){
         const accidental=document.createElementNS(ns,"text");
-        accidental.setAttribute("x",noteX-45);
-        accidental.setAttribute("y",y+10);
+        accidental.setAttribute("x",noteX-45); accidental.setAttribute("y",y+10);
         accidental.setAttribute("text-anchor","middle");
         accidental.setAttribute("class","note-accidental-real");
         accidental.textContent=note.accidental;
@@ -3153,67 +3179,60 @@ function drawNoteStave(note){
     }
 
     const head=document.createElementNS(ns,"ellipse");
-    head.setAttribute("cx",noteX);
-    head.setAttribute("cy",y);
-    head.setAttribute("rx","12");
-    head.setAttribute("ry","8");
+    head.setAttribute("cx",noteX); head.setAttribute("cy",y);
+    head.setAttribute("rx","12"); head.setAttribute("ry","8");
     head.setAttribute("transform",`rotate(-20 ${noteX} ${y})`);
     head.setAttribute("class","note-head-real");
     group.appendChild(head);
 
     const stem=document.createElementNS(ns,"line");
-    stem.setAttribute("x1",noteX+10);
-    stem.setAttribute("x2",noteX+10);
-    stem.setAttribute("y1",y-1);
-    stem.setAttribute("y2",y-58);
+    stem.setAttribute("x1",noteX+10); stem.setAttribute("x2",noteX+10);
+    stem.setAttribute("y1",y-1); stem.setAttribute("y2",y-58);
     stem.setAttribute("class","note-stem-real");
     group.appendChild(stem);
+}
 
-    /* Malý popis tónu pod osnovou pomáha deťom pri učení. */
-    const caption=document.createElementNS(ns,"text");
-    caption.setAttribute("x",noteX);
-    caption.setAttribute("y","215");
-    caption.setAttribute("text-anchor","middle");
-    caption.setAttribute("class","note-name-real");
-    caption.textContent="?";
-    group.appendChild(caption);
+function playCurrentNote(){
+    if(currentNote && currentNote.freq) playPiano(currentNote.freq,.65,.24);
 }
 
 function newNoteQuestion(){
     const list=noteModeList();
-    currentNote=list[Math.floor(Math.random()*list.length)];
+    if(!noteQueue.length || noteQueueIndex>=noteQueue.length) refillNoteQueue();
+    currentNote=noteQueue[noteQueueIndex++];
 
     document.getElementById("noteModeTitle").textContent=
         noteMode==="treble"
         ?"🎻 Husľový kľúč – poznaj notu"
         :noteMode==="bass"
         ?"🎸 Basový kľúč – poznaj notu"
-        :"♯ / ♭ Posuvky – poznaj notu";
+        :"♯ / ♭ Posuvky – husľový kľúč";
 
     updateNoteModeButtons();
     drawNoteStave(currentNote);
     createNoteAnswers(list);
+    playCurrentNote();
 
-    document.getElementById("noteStatus").className="status";
-    document.getElementById("noteStatus").textContent="Vyber správnu odpoveď.";
+    const status=document.getElementById("noteStatus");
+    status.className="status";
+    status.textContent="🎹 Vypočuj si notu a vyber správnu odpoveď.";
+}
+
+function selectNoteMode(mode){
+    noteMode=mode;
+    noteQueue=[];
+    noteQueueIndex=0;
+    newNoteQuestion();
 }
 
 function createNoteAnswers(list){
     const answers=document.getElementById("noteAnswers");
     answers.innerHTML="";
-
-    let choices=[currentNote];
-
-    while(choices.length<3){
-        const candidate=list[Math.floor(Math.random()*list.length)];
-        if(!choices.some(choice=>choice.name===candidate.name)){
-            choices.push(candidate);
-        }
+    const choices=shuffleArray(list).slice(0,3);
+    if(!choices.some(choice=>choice.name===currentNote.name)){
+        choices[Math.floor(Math.random()*3)]=currentNote;
     }
-
-    choices.sort(()=>Math.random()-.5);
-
-    choices.forEach(choice=>{
+    shuffleArray(choices).forEach(choice=>{
         const button=document.createElement("button");
         button.textContent=choice.label;
         button.onclick=()=>answerNote(choice);
@@ -3223,20 +3242,18 @@ function createNoteAnswers(list){
 
 function answerNote(answer){
     const status=document.getElementById("noteStatus");
-
     if(answer.name===currentNote.name){
         status.className="status success";
-        status.textContent="🎉 Správne! Výborne!";
-
+        status.textContent="🎉 Správne!";
         noteScore++;
         document.getElementById("noteScore").textContent=noteScore;
         updateBadgeProgress("notes");
         confetti();
-
         setTimeout(newNoteQuestion,900);
     }else{
         status.className="status error";
-        status.textContent="🙂 Nesprávne. Pozri sa ešte raz na polohu noty a kľúč.";
+        status.textContent="🙂 Nesprávne. Skús to ešte raz.";
+        playCurrentNote();
     }
 }
 
@@ -3245,169 +3262,167 @@ function answerNote(answer){
 ===================================================== */
 
 let intervalGame="picture";
-
 let currentInterval=5;
-
+let currentIntervalStart=0;
+let currentBuildStart=0;
+let currentBuildInterval=5;
 let intervalScore=0;
 
+const intervalNames=["Prima","Sekunda","Tercia","Kvarta","Kvinta","Sexta","Septima","Oktáva"];
+const cMajorNames=["C","D","E","F","G","A","H"];
+const cMajorFreqs=[261.63,293.66,329.63,349.23,392.00,440.00,493.88];
 
-const intervalNames=[
-    "Prima",
-    "Sekunda",
-    "Tercia",
-    "Kvarta",
-    "Kvinta",
-    "Sexta",
-    "Septima",
-    "Oktáva"
-];
+function intervalNoteStep(start,interval){
+    return start+interval;
+}
 
+function intervalName(index){
+    return intervalNames[index];
+}
 
-const intervalPairs=[
-    ["C","C"],
-    ["C","D"],
-    ["C","E"],
-    ["C","F"],
-    ["C","G"],
-    ["C","A"],
-    ["C","H"],
-    ["C","C"]
-];
+function drawIntervalStave(svgId,notes,octaveMessageId=null){
+    const group=document.getElementById(svgId);
+    group.innerHTML="";
+    const ns="http://www.w3.org/2000/svg";
+    const xLeft=70,xRight=850,bottomY=150,stepPx=11;
 
+    for(let i=0;i<5;i++){
+        const line=document.createElementNS(ns,"line");
+        const y=bottomY-i*stepPx*2;
+        line.setAttribute("x1",xLeft); line.setAttribute("x2",xRight);
+        line.setAttribute("y1",y); line.setAttribute("y2",y);
+        line.setAttribute("class","interval-staff-line");
+        group.appendChild(line);
+    }
+
+    const clef=document.createElementNS(ns,"text");
+    clef.setAttribute("x","85"); clef.setAttribute("y","151");
+    clef.setAttribute("font-size","104"); clef.setAttribute("class","interval-clef");
+    clef.textContent="𝄞"; group.appendChild(clef);
+
+    notes.forEach((note,index)=>{
+        const x=310+index*270;
+        const step=note.step;
+        const y=bottomY-step*stepPx;
+        if(step>=5){
+            for(let st=5;st<=step;st+=2){
+                const ledger=document.createElementNS(ns,"line");
+                ledger.setAttribute("x1",x-25); ledger.setAttribute("x2",x+25);
+                ledger.setAttribute("y1",bottomY-st*stepPx); ledger.setAttribute("y2",bottomY-st*stepPx);
+                ledger.setAttribute("class","interval-note-ledger"); group.appendChild(ledger);
+            }
+        }
+        if(step<=-6){
+            for(let st=-6;st>=step;st-=2){
+                const ledger=document.createElementNS(ns,"line");
+                ledger.setAttribute("x1",x-25); ledger.setAttribute("x2",x+25);
+                ledger.setAttribute("y1",bottomY-st*stepPx); ledger.setAttribute("y2",bottomY-st*stepPx);
+                ledger.setAttribute("class","interval-note-ledger"); group.appendChild(ledger);
+            }
+        }
+        const head=document.createElementNS(ns,"ellipse");
+        head.setAttribute("cx",x); head.setAttribute("cy",y); head.setAttribute("rx","12"); head.setAttribute("ry","8");
+        head.setAttribute("transform",`rotate(-20 ${x} ${y})`); head.setAttribute("class","interval-note-head"); group.appendChild(head);
+        const stem=document.createElementNS(ns,"line");
+        stem.setAttribute("x1",x+10); stem.setAttribute("x2",x+10); stem.setAttribute("y1",y-1); stem.setAttribute("y2",y-58); stem.setAttribute("class","interval-note-stem"); group.appendChild(stem);
+    });
+
+    if(octaveMessageId){
+        document.getElementById(octaveMessageId).textContent=notes[1] && notes[1].step-notes[0].step===7 ? "🔔 Oktáva – druhá nota je o celú oktávu vyššie" : "";
+    }
+}
+
+function renderIntervalPicture(){
+    const secondStep=currentIntervalStart+currentInterval;
+    const notes=[
+        {name:cMajorNames[currentIntervalStart],step:currentIntervalStart},
+        {name:cMajorNames[secondStep%7],step:secondStep}
+    ];
+    drawIntervalStave("intervalStaveGraphics",notes,"intervalOctaveNote");
+}
+
+function createIntervalAnswers(){
+    const container=document.getElementById("intervalAnswers");
+    container.innerHTML="";
+    intervalNames.forEach((name,index)=>{
+        const button=document.createElement("button");
+        button.textContent=index===7 ? "8 – Oktáva" : (index+1)+" – "+name;
+        button.onclick=()=>answerInterval(index);
+        container.appendChild(button);
+    });
+}
 
 function newInterval(){
-
-    currentInterval=
-        Math.floor(
-            Math.random()*8
-        );
-
-
-    document.getElementById(
-        "intervalNote1"
-    ).textContent=
-        intervalPairs[
-            currentInterval
-        ][0];
-
-
-    document.getElementById(
-        "intervalNote2"
-    ).textContent=
-        intervalPairs[
-            currentInterval
-        ][1];
-
-
-    const container=
-        document.getElementById(
-            "intervalAnswers"
-        );
-
-
-    container.innerHTML="";
-
-
-    intervalNames.forEach(
-        (name,index)=>{
-
-            const button=
-                document.createElement(
-                    "button"
-                );
-
-            button.textContent=name;
-
-            button.onclick=
-                ()=>answerInterval(index);
-
-            container.appendChild(
-                button
-            );
-
-        }
-    );
+    intervalGame="picture";
+    document.getElementById("intervalPictureGame").style.display="block";
+    document.getElementById("intervalBuildGame").style.display="none";
+    currentInterval=Math.floor(Math.random()*8);
+    currentIntervalStart=Math.floor(Math.random()*(8-currentInterval));
+    renderIntervalPicture();
+    createIntervalAnswers();
+    document.getElementById("intervalStatus").className="status";
+    document.getElementById("intervalStatus").textContent="Vyber správnu odpoveď.";
 }
-
 
 function answerInterval(answer){
-
-    const status=
-        document.getElementById(
-            "intervalStatus"
-        );
-
-
+    const status=document.getElementById("intervalStatus");
     if(answer===currentInterval){
-
-        status.textContent=
-            "🎉 Správne!";
-
+        status.className="status success";
+        status.textContent="🎉 Správne!";
         intervalScore++;
-
-        document.getElementById(
-            "intervalScore"
-        ).textContent=
-            intervalScore;
-
-        updateBadgeProgress(
-            "intervals"
-        );
-
+        document.getElementById("intervalScore").textContent=intervalScore;
+        updateBadgeProgress("intervals");
         confetti();
-
+        setTimeout(newInterval,900);
+    }else{
+        status.className="status error";
+        status.textContent="🙂 Nie celkom. Skús znova.";
     }
-    else{
-
-        status.textContent=
-            "🙂 Nie celkom. Skús znova.";
-
-    }
-
-
-    setTimeout(
-        newInterval,
-        900
-    );
 }
 
-
-function playInterval(){
-
-    const index=
-        Math.floor(
-            Math.random()*7
-        );
-
-
-    const freqs=[
-        261.63,
-        293.66,
-        329.63,
-        349.23,
-        392,
-        440,
-        493.88
-    ];
-
-
-    playPiano(
-        freqs[0],
-        .5
-    );
-
-
-    setTimeout(
-        ()=>{
-            playPiano(
-                freqs[index],
-                .6
-            );
-        },
-        650
-    );
+function newBuildInterval(){
+    intervalGame="build";
+    document.getElementById("intervalPictureGame").style.display="none";
+    document.getElementById("intervalBuildGame").style.display="block";
+    currentBuildInterval=Math.floor(Math.random()*8);
+    currentBuildStart=Math.floor(Math.random()*(8-currentBuildInterval));
+    const startName=cMajorNames[currentBuildStart];
+    document.getElementById("buildStartNote").textContent=startName;
+    document.getElementById("buildTargetInterval").textContent=(currentBuildInterval+1)+" – "+intervalName(currentBuildInterval);
+    drawIntervalStave("buildIntervalStaveGraphics",[{name:startName,step:currentBuildStart}],null);
+    const answers=document.getElementById("buildIntervalAnswers");
+    answers.innerHTML="";
+    cMajorNames.forEach((name,index)=>{
+        const button=document.createElement("button");
+        button.textContent=name;
+        button.onclick=()=>answerBuildInterval(index);
+        answers.appendChild(button);
+    });
+    document.getElementById("buildIntervalStatus").className="status";
+    document.getElementById("buildIntervalStatus").textContent="Vyber druhú notu.";
 }
 
+function answerBuildInterval(answer){
+    const status=document.getElementById("buildIntervalStatus");
+    const correct=currentBuildStart+currentBuildInterval;
+    if(answer===correct){
+        status.className="status success";
+        status.textContent="🎉 Správne!";
+        intervalScore++;
+        document.getElementById("intervalScore").textContent=intervalScore;
+        updateBadgeProgress("intervals");
+        confetti();
+        setTimeout(newBuildInterval,900);
+    }else{
+        status.className="status error";
+        status.textContent="🙂 Nie celkom. Skús inú notu.";
+    }
+}
+
+function selectIntervalMode(mode){
+    if(mode==="picture") newInterval();
+    else newBuildInterval();
+}
 
 /* =====================================================
    AKORDY
