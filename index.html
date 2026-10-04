@@ -504,43 +504,10 @@ button.selected{
    INTERVALY
 ========================= */
 
-.interval-display{
-    display:flex;
-    justify-content:center;
-    gap:45px;
-    align-items:center;
-    font-size:70px;
-    padding:30px;
-    background:#eef8ff;
-    border-radius:25px;
-}
-
-.interval-stave-container{
-    background:white;
-    border-radius:25px;
-    padding:15px;
-    margin:20px 0;
-    box-shadow:inset 0 0 0 3px #eee7fa;
-    overflow-x:auto;
-}
-
-#intervalStave,#buildIntervalStave{
-    width:100%;
-    min-width:650px;
-    height:260px;
-}
-
-.interval-staff-line{stroke:#45404c;stroke-width:2;}
-.interval-clef{font-family:serif;fill:#24212a;}
-.interval-note-head{fill:#24212a;}
-.interval-note-stem{stroke:#24212a;stroke-width:3;}
-.interval-note-ledger{stroke:#45404c;stroke-width:2;}
-.interval-octave-note{
-    text-align:center;
-    min-height:28px;
-    font-weight:900;
-    color:#7654c4;
-}
+.interval-letter-board{display:flex;justify-content:center;align-items:center;gap:18px;flex-wrap:wrap;background:#eef8ff;border-radius:25px;padding:28px;margin:20px 0;}
+.interval-letter-note{min-width:120px;padding:22px 28px;border-radius:22px;background:white;box-shadow:0 8px 0 #c9adff;font-size:52px;font-weight:900;color:#7654c4;text-align:center;}
+.interval-letter-arrow{font-size:38px;font-weight:900;color:#8b6bc9;}
+.interval-octave-note{text-align:center;min-height:28px;font-weight:900;color:#7654c4;}
 .interval-hint{
     background:#f5efff;
     padding:14px 18px;
@@ -562,6 +529,16 @@ button.selected{
 .interval-target-label{font-size:15px;font-weight:bold;opacity:.7;text-align:center;}
 .interval-target{font-size:32px;font-weight:900;color:#7654c4;text-align:center;}
 
+
+.interval-puzzle{background:linear-gradient(135deg,#fff6bd,#eef8ff);border-radius:28px;padding:25px;margin:20px 0;}
+.interval-puzzle-row{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0;}
+.interval-slot{width:110px;height:86px;border:4px dashed #c9adff;border-radius:20px;background:white;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:900;color:#7654c4;}
+.interval-slot.filled{border-style:solid;background:#f5efff;}
+.lego-block{min-width:68px;min-height:68px;border:0;border-radius:16px;background:#ff91bd;color:white;font-size:28px;font-weight:900;box-shadow:0 6px 0 #d6538d;}
+.lego-block:nth-child(2n){background:#9ddcff;color:#225a7a;box-shadow:0 6px 0 #67afd4;}
+.lego-block:nth-child(3n){background:#aee8b1;color:#27622c;box-shadow:0 6px 0 #70bb74;}
+.lego-block:hover{transform:translateY(-4px) rotate(-2deg);}
+.lego-label{text-align:center;font-weight:900;color:#7654c4;margin-top:8px;}
 /* =========================
    AKORDY
 ========================= */
@@ -1443,139 +1420,55 @@ Znižuje tón o pol tónu.
 ========================= -->
 
 <section id="intervals" class="section">
-
 <div class="panel">
-
-<h1>↕️ Intervaly</h1>
-
+<h1>↕️ Určenie a skladanie intervalov</h1>
 <div class="controls">
-
-<button
-class="primary"
-onclick="selectIntervalMode('picture')">
-🎨 Podľa obrázka
-</button>
-
-
-<button
-class="purple"
-onclick="selectIntervalMode('build')">
-🎯 Postav interval
-</button>
-
+<button class="primary" onclick="selectIntervalMode('picture')">🎨 Urči interval</button>
+<button class="purple" onclick="selectIntervalMode('build')">🧩 Postav interval</button>
 </div>
 
 <div id="intervalPictureGame">
-
-<h2>🎨 1. Podľa obrázka</h2>
-
-<p class="interval-hint">
-Pracujeme iba s tónmi <strong>C dur</strong> (C – D – E – F – G – A – H).
-Prvá nota nemusí byť C. Urči, aký interval tvoria dve zobrazené noty.
-</p>
-
-<div class="interval-stave-container">
-    <svg id="intervalStave" viewBox="0 0 900 260" preserveAspectRatio="xMidYMid meet">
-        <g id="intervalStaveGraphics"></g>
-    </svg>
-</div>
-
+<h2>🎨 1. Urči interval</h2>
+<p class="interval-hint">Pracujeme iba s tónmi <strong>C dur</strong> (C – D – E – F – G – A – H). Prvá nota nemusí byť C. Pozri sa na dve písmenkové noty a urč, aký interval tvoria.</p>
+<div class="interval-letter-board" id="intervalLetterBoard"></div>
 <div class="interval-octave-note" id="intervalOctaveNote"></div>
-
 <h3>Aký je to interval?</h3>
 <div class="answers" id="intervalAnswers"></div>
 <div class="status" id="intervalStatus">Vyber správnu odpoveď.</div>
-
 </div>
 
 <div id="intervalBuildGame" style="display:none;">
-
-<h2>🎯 2. Vyskladaj interval</h2>
-
-<p class="interval-hint">
-Zobrazená je prvá nota a interval, ktorý máš vytvoriť.
-Vyber druhú notu z tónov <strong>C dur</strong>.
-</p>
-
-<div class="interval-build-card">
-    <div class="interval-build-note" id="buildStartNote">C</div>
-    <div class="interval-build-arrow">→</div>
-    <div>
-        <div class="interval-target-label">Vyskladaj</div>
-        <div class="interval-target" id="buildTargetInterval">Kvinta</div>
-    </div>
+<h2>🧩 2. Postav interval</h2>
+<p class="interval-hint">Zober prvú notu a postav k nej požadovaný interval. Použi iba tóny <strong>C dur</strong>. Klikaj na „lego“ kocky a vyskladaj správnu druhú notu.</p>
+<div class="interval-puzzle">
+<div class="lego-label">Tvoja stavebná úloha</div>
+<div class="interval-puzzle-row">
+<div class="interval-slot filled" id="buildStartNote">C</div>
+<div class="interval-letter-arrow">+</div>
+<div class="interval-slot" id="buildTargetInterval">5 – Kvinta</div>
+<div class="interval-letter-arrow">=</div>
+<div class="interval-slot" id="buildAnswerSlot">?</div>
+</div>
+<div class="lego-label">Vyber kocku s druhou notou:</div>
+<div class="interval-puzzle-row" id="buildIntervalAnswers"></div>
+</div>
+<div class="status" id="buildIntervalStatus">🧩 Poskladaj interval.</div>
 </div>
 
-<div class="interval-stave-container">
-    <svg id="buildIntervalStave" viewBox="0 0 900 260" preserveAspectRatio="xMidYMid meet">
-        <g id="buildIntervalStaveGraphics"></g>
-    </svg>
+<p class="quiz-score">Správne: <span id="intervalScore">0</span>/10</p>
 </div>
-
-<h3>Vyber druhú notu:</h3>
-<div class="answers" id="buildIntervalAnswers"></div>
-<div class="status" id="buildIntervalStatus">Vyber správnu notu.</div>
-
-</div>
-
-<p class="quiz-score">
-Správne: <span id="intervalScore">0</span>/10
-</p>
-
-<p class="quiz-score">
-Správne:
-<span id="intervalScore">0</span>/10
-</p>
-
-</div>
-
 
 <div class="panel">
-
 <h2>📖 Intervaly</h2>
-
-<div class="explanation">
-<h3>1 – Prima</h3>
-<p>C → C</p>
+<div class="explanation"><h3>1 – Prima</h3><p>C → C</p></div>
+<div class="explanation"><h3>2 – Sekunda</h3><p>C → D</p></div>
+<div class="explanation"><h3>3 – Tercia</h3><p>C → E</p></div>
+<div class="explanation"><h3>4 – Kvarta</h3><p>C → F</p></div>
+<div class="explanation"><h3>5 – Kvinta</h3><p>C → G</p></div>
+<div class="explanation"><h3>6 – Sexta</h3><p>C → A</p></div>
+<div class="explanation"><h3>7 – Septima</h3><p>C → H</p></div>
+<div class="explanation"><h3>8 – Oktáva</h3><p>C → C</p></div>
 </div>
-
-<div class="explanation">
-<h3>2 – Sekunda</h3>
-<p>C → D</p>
-</div>
-
-<div class="explanation">
-<h3>3 – Tercia</h3>
-<p>C → E</p>
-</div>
-
-<div class="explanation">
-<h3>4 – Kvarta</h3>
-<p>C → F</p>
-</div>
-
-<div class="explanation">
-<h3>5 – Kvinta</h3>
-<p>C → G</p>
-</div>
-
-<div class="explanation">
-<h3>6 – Sexta</h3>
-<p>C → A</p>
-</div>
-
-<div class="explanation">
-<h3>7 – Septima</h3>
-<p>C → H</p>
-</div>
-
-<div class="explanation">
-<h3>8 – Oktáva</h3>
-<p>C → C</p>
-</div>
-
-</div>
-
 </section>
 
 
@@ -3077,35 +2970,45 @@ let noteQueue=[];
 let noteQueueIndex=0;
 
 const trebleNoteData=[
-    {name:"C",label:"C",step:-2,freq:261.63},
-    {name:"D",label:"D",step:-1,freq:293.66},
-    {name:"E",label:"E",step:0,freq:329.63},
-    {name:"F",label:"F",step:1,freq:349.23},
-    {name:"G",label:"G",step:2,freq:392.00},
-    {name:"A",label:"A",step:3,freq:440.00},
-    {name:"H",label:"H",step:4,freq:493.88}
+    {name:"C4",label:"C4",step:-2,freq:261.63},{name:"D4",label:"D4",step:-1,freq:293.66},
+    {name:"E4",label:"E4",step:0,freq:329.63},{name:"F4",label:"F4",step:1,freq:349.23},
+    {name:"G4",label:"G4",step:2,freq:392.00},{name:"A4",label:"A4",step:3,freq:440.00},
+    {name:"H4",label:"H4",step:4,freq:493.88},{name:"C5",label:"C5",step:5,freq:523.25},
+    {name:"D5",label:"D5",step:6,freq:587.33},{name:"E5",label:"E5",step:7,freq:659.25},
+    {name:"F5",label:"F5",step:8,freq:698.46},{name:"G5",label:"G5",step:9,freq:783.99},
+    {name:"A5",label:"A5",step:10,freq:880.00},{name:"H5",label:"H5",step:11,freq:987.77},
+    {name:"C6",label:"C6",step:12,freq:1046.50}
 ];
 
 const bassNoteData=[
-    {name:"C",label:"C",step:3,freq:261.63},
-    {name:"D",label:"D",step:4,freq:293.66},
-    {name:"E",label:"E",step:5,freq:329.63},
-    {name:"F",label:"F",step:6,freq:349.23},
-    {name:"G",label:"G",step:0,freq:392.00},
-    {name:"A",label:"A",step:1,freq:440.00},
-    {name:"H",label:"H",step:2,freq:493.88}
+    {name:"C2",label:"C2",step:-4,freq:65.41},{name:"D2",label:"D2",step:-3,freq:73.42},
+    {name:"E2",label:"E2",step:-2,freq:82.41},{name:"F2",label:"F2",step:-1,freq:87.31},
+    {name:"G2",label:"G2",step:0,freq:98.00},{name:"A2",label:"A2",step:1,freq:110.00},
+    {name:"H2",label:"H2",step:2,freq:123.47},{name:"C3",label:"C3",step:3,freq:130.81},
+    {name:"D3",label:"D3",step:4,freq:146.83},{name:"E3",label:"E3",step:5,freq:164.81},
+    {name:"F3",label:"F3",step:6,freq:174.61},{name:"G3",label:"G3",step:7,freq:196.00},
+    {name:"A3",label:"A3",step:8,freq:220.00},{name:"H3",label:"H3",step:9,freq:246.94},
+    {name:"C4",label:"C4",step:10,freq:261.63}
 ];
 
-/* Posuvky patria iba pod husľový kľúč. */
+/* Posuvky patria iba pod husľový kľúč a teraz sa precvičujú v rôznych výškach. */
 const accidentalNoteData=[
-    {name:"Fis",label:"Fis",base:"F",accidental:"♯",step:1,freq:369.99},
-    {name:"Cis",label:"Cis",base:"C",accidental:"♯",step:-2,freq:277.18},
-    {name:"Gis",label:"Gis",base:"G",accidental:"♯",step:2,freq:415.30},
-    {name:"Dis",label:"Dis",base:"D",accidental:"♯",step:-1,freq:311.13},
-    {name:"B",label:"B",base:"H",accidental:"♭",step:4,freq:466.16},
-    {name:"Es",label:"Es",base:"E",accidental:"♭",step:0,freq:311.13},
-    {name:"As",label:"As",base:"A",accidental:"♭",step:3,freq:415.30},
-    {name:"Des",label:"Des",base:"D",accidental:"♭",step:-1,freq:277.18}
+    {name:"Cis4",label:"Cis4",base:"C",accidental:"♯",step:-2,freq:277.18},
+    {name:"Dis4",label:"Dis4",base:"D",accidental:"♯",step:-1,freq:311.13},
+    {name:"Fis4",label:"Fis4",base:"F",accidental:"♯",step:1,freq:369.99},
+    {name:"Gis4",label:"Gis4",base:"G",accidental:"♯",step:2,freq:415.30},
+    {name:"B4",label:"B4",base:"H",accidental:"♭",step:4,freq:466.16},
+    {name:"Cis5",label:"Cis5",base:"C",accidental:"♯",step:5,freq:554.37},
+    {name:"Dis5",label:"Dis5",base:"D",accidental:"♯",step:6,freq:622.25},
+    {name:"Es5",label:"Es5",base:"E",accidental:"♭",step:7,freq:622.25},
+    {name:"Fis5",label:"Fis5",base:"F",accidental:"♯",step:8,freq:739.99},
+    {name:"Gis5",label:"Gis5",base:"G",accidental:"♯",step:9,freq:830.61},
+    {name:"As5",label:"As5",base:"A",accidental:"♭",step:10,freq:830.61},
+    {name:"B5",label:"B5",base:"H",accidental:"♭",step:11,freq:932.33},
+    {name:"Des5",label:"Des5",base:"D",accidental:"♭",step:6,freq:554.37},
+    {name:"As4",label:"As4",base:"A",accidental:"♭",step:3,freq:415.30},
+    {name:"Es4",label:"Es4",base:"E",accidental:"♭",step:0,freq:311.13},
+    {name:"Gis4",label:"Gis4",base:"G",accidental:"♯",step:2,freq:415.30}
 ];
 
 function noteModeList(){
@@ -3159,8 +3062,8 @@ function drawNoteStave(note){
 
     const y=bottomY-note.step*stepPx;
     const ledgerSteps=[];
-    if(note.step>=5) for(let step=5;step<=note.step;step+=2) ledgerSteps.push(step);
-    if(note.step<=-6) for(let step=-6;step>=note.step;step-=2) ledgerSteps.push(step);
+    if(note.step>=10) for(let step=10;step<=note.step;step+=2) ledgerSteps.push(step);
+    if(note.step<=-2) for(let step=-2;step>=note.step;step-=2) ledgerSteps.push(step);
     ledgerSteps.forEach(step=>{
         const ledger=document.createElementNS(ns,"line");
         ledger.setAttribute("x1",noteX-28); ledger.setAttribute("x2",noteX+28);
@@ -3280,65 +3183,15 @@ function intervalName(index){
     return intervalNames[index];
 }
 
-function drawIntervalStave(svgId,notes,octaveMessageId=null){
-    const group=document.getElementById(svgId);
-    group.innerHTML="";
-    const ns="http://www.w3.org/2000/svg";
-    const xLeft=70,xRight=850,bottomY=150,stepPx=11;
-
-    for(let i=0;i<5;i++){
-        const line=document.createElementNS(ns,"line");
-        const y=bottomY-i*stepPx*2;
-        line.setAttribute("x1",xLeft); line.setAttribute("x2",xRight);
-        line.setAttribute("y1",y); line.setAttribute("y2",y);
-        line.setAttribute("class","interval-staff-line");
-        group.appendChild(line);
-    }
-
-    const clef=document.createElementNS(ns,"text");
-    clef.setAttribute("x","85"); clef.setAttribute("y","151");
-    clef.setAttribute("font-size","104"); clef.setAttribute("class","interval-clef");
-    clef.textContent="𝄞"; group.appendChild(clef);
-
-    notes.forEach((note,index)=>{
-        const x=310+index*270;
-        const step=note.step;
-        const y=bottomY-step*stepPx;
-        if(step>=5){
-            for(let st=5;st<=step;st+=2){
-                const ledger=document.createElementNS(ns,"line");
-                ledger.setAttribute("x1",x-25); ledger.setAttribute("x2",x+25);
-                ledger.setAttribute("y1",bottomY-st*stepPx); ledger.setAttribute("y2",bottomY-st*stepPx);
-                ledger.setAttribute("class","interval-note-ledger"); group.appendChild(ledger);
-            }
-        }
-        if(step<=-6){
-            for(let st=-6;st>=step;st-=2){
-                const ledger=document.createElementNS(ns,"line");
-                ledger.setAttribute("x1",x-25); ledger.setAttribute("x2",x+25);
-                ledger.setAttribute("y1",bottomY-st*stepPx); ledger.setAttribute("y2",bottomY-st*stepPx);
-                ledger.setAttribute("class","interval-note-ledger"); group.appendChild(ledger);
-            }
-        }
-        const head=document.createElementNS(ns,"ellipse");
-        head.setAttribute("cx",x); head.setAttribute("cy",y); head.setAttribute("rx","12"); head.setAttribute("ry","8");
-        head.setAttribute("transform",`rotate(-20 ${x} ${y})`); head.setAttribute("class","interval-note-head"); group.appendChild(head);
-        const stem=document.createElementNS(ns,"line");
-        stem.setAttribute("x1",x+10); stem.setAttribute("x2",x+10); stem.setAttribute("y1",y-1); stem.setAttribute("y2",y-58); stem.setAttribute("class","interval-note-stem"); group.appendChild(stem);
-    });
-
-    if(octaveMessageId){
-        document.getElementById(octaveMessageId).textContent=notes[1] && notes[1].step-notes[0].step===7 ? "🔔 Oktáva – druhá nota je o celú oktávu vyššie" : "";
-    }
-}
-
 function renderIntervalPicture(){
     const secondStep=currentIntervalStart+currentInterval;
-    const notes=[
-        {name:cMajorNames[currentIntervalStart],step:currentIntervalStart},
-        {name:cMajorNames[secondStep%7],step:secondStep}
-    ];
-    drawIntervalStave("intervalStaveGraphics",notes,"intervalOctaveNote");
+    const first=cMajorNames[currentIntervalStart];
+    const second=cMajorNames[secondStep%7];
+    const firstOctave=4;
+    const secondOctave=4+Math.floor(secondStep/7);
+    const board=document.getElementById("intervalLetterBoard");
+    board.innerHTML=`<div class="interval-letter-note">${first}${firstOctave}</div><div class="interval-letter-arrow">→</div><div class="interval-letter-note">${second}${secondOctave}</div>`;
+    document.getElementById("intervalOctaveNote").textContent="";
 }
 
 function createIntervalAnswers(){
@@ -3346,7 +3199,7 @@ function createIntervalAnswers(){
     container.innerHTML="";
     intervalNames.forEach((name,index)=>{
         const button=document.createElement("button");
-        button.textContent=index===7 ? "8 – Oktáva" : (index+1)+" – "+name;
+        button.textContent=(index+1)+" – "+name;
         button.onclick=()=>answerInterval(index);
         container.appendChild(button);
     });
@@ -3387,19 +3240,20 @@ function newBuildInterval(){
     currentBuildInterval=Math.floor(Math.random()*8);
     currentBuildStart=Math.floor(Math.random()*(8-currentBuildInterval));
     const startName=cMajorNames[currentBuildStart];
-    document.getElementById("buildStartNote").textContent=startName;
+    document.getElementById("buildStartNote").textContent=startName+"4";
     document.getElementById("buildTargetInterval").textContent=(currentBuildInterval+1)+" – "+intervalName(currentBuildInterval);
-    drawIntervalStave("buildIntervalStaveGraphics",[{name:startName,step:currentBuildStart}],null);
+    document.getElementById("buildAnswerSlot").textContent="?";
     const answers=document.getElementById("buildIntervalAnswers");
     answers.innerHTML="";
     cMajorNames.forEach((name,index)=>{
         const button=document.createElement("button");
-        button.textContent=name;
+        button.className="lego-block";
+        button.textContent=name+"4";
         button.onclick=()=>answerBuildInterval(index);
         answers.appendChild(button);
     });
     document.getElementById("buildIntervalStatus").className="status";
-    document.getElementById("buildIntervalStatus").textContent="Vyber druhú notu.";
+    document.getElementById("buildIntervalStatus").textContent="🧩 Vyber správnu lego kocku.";
 }
 
 function answerBuildInterval(answer){
@@ -3407,7 +3261,8 @@ function answerBuildInterval(answer){
     const correct=currentBuildStart+currentBuildInterval;
     if(answer===correct){
         status.className="status success";
-        status.textContent="🎉 Správne!";
+        status.textContent="🎉 Správne poskladané!";
+        document.getElementById("buildAnswerSlot").textContent=cMajorNames[correct]+"4";
         intervalScore++;
         document.getElementById("intervalScore").textContent=intervalScore;
         updateBadgeProgress("intervals");
@@ -3415,7 +3270,7 @@ function answerBuildInterval(answer){
         setTimeout(newBuildInterval,900);
     }else{
         status.className="status error";
-        status.textContent="🙂 Nie celkom. Skús inú notu.";
+        status.textContent="🙂 Táto kocka sem nepatrí. Skús inú.";
     }
 }
 
